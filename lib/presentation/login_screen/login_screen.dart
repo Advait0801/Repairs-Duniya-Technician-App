@@ -1,0 +1,185 @@
+// ignore_for_file: must_be_immutable
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/otp_screen/otp_screen.dart';
+import 'package:technician_app/widgets/custom_checkbox_button.dart';
+import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/custom_text_form_field.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController phoneNumberController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool rememberForDays = false;
+  String phoneNumber = '';
+  bool flag = false;
+
+  // ignore: prefer_final_fields
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    mediaQueryData = MediaQuery.of(context);
+    return SafeArea(
+      child: Scaffold(
+        extendBody: true,
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          width: mediaQueryData.size.width,
+          height: mediaQueryData.size.height,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: const Alignment(0.5, 0),
+              end: const Alignment(0.5, 1),
+              colors: [
+                theme.colorScheme.onError,
+                appTheme.gray50,
+              ],
+            ),
+          ),
+          child: Form(
+            key: _formKey,
+            child: Container(
+              width: double.maxFinite,
+              padding: EdgeInsets.only(
+                left: 23.h,
+                top: 72.v,
+                right: 23.h,
+              ),
+              child: Column(
+                children: [
+                  CustomImageView(
+                    imagePath: ImageConstant.imgEllipse12,
+                    height: 65.adaptSize,
+                    width: 65.adaptSize,
+                    radius: BorderRadius.circular(
+                      32.h,
+                    ),
+                  ),
+                  SizedBox(height: 27.v),
+                  Text(
+                    "Log in to your account",
+                    style: theme.textTheme.headlineSmall,
+                  ),
+                  SizedBox(height: 10.v),
+                  Text(
+                    "Welcome back! Please enter your details.",
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                  SizedBox(height: 33.v),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 3.h),
+                      child: Text(
+                        "Phone number",
+                        style: CustomTextStyles.titleSmallOnPrimary,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 7.v),
+                  CustomTextFormField(
+                    onChanged: (value) {
+                      phoneNumber = value;
+                      setState(() {
+                        if (phoneNumber.length == 10) {
+                          flag = true;
+                        } else {
+                          flag = false;
+                        }
+                      });
+                    },
+                    controller: phoneNumberController,
+                    hintText: "Enter your phone number",
+                    textInputAction: TextInputAction.done,
+                    textInputType: TextInputType.phone,
+                  ),
+                  SizedBox(height: 24.v),
+                  _buildRememberForDays(context),
+                  SizedBox(height: 24.v),
+                  CustomElevatedButton(
+                    text: "Log in",
+                    buttonStyle: flag == true
+                        ? const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.black))
+                        : const ButtonStyle(),
+                    onPressed: () async {
+                      await _auth.verifyPhoneNumber(
+                        phoneNumber: '+91${phoneNumberController.text}',
+                        verificationCompleted:
+                            (PhoneAuthCredential credential) {},
+                        verificationFailed: (FirebaseAuthException e) {},
+                        codeSent: (String verificationId, int? resendToken) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OtpScreen(
+                                verificationId: verificationId,
+                                phoneNumber: '+91${phoneNumberController.text}',
+                              ),
+                            ),
+                          );
+                        },
+                        codeAutoRetrievalTimeout: (String verificationId) {},
+                      );
+                    },
+                  ),
+                  SizedBox(height: 33.v),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 1.v),
+                        child: Text(
+                          "Don’t have an account?",
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 4.h),
+                        child: Text(
+                          "Sign up",
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5.v),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Section Widget
+  Widget _buildRememberForDays(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: EdgeInsets.only(left: 3.h),
+        child: CustomCheckboxButton(
+          alignment: Alignment.centerLeft,
+          text: "Remember for 30 days",
+          value: rememberForDays,
+          padding: EdgeInsets.symmetric(vertical: 1.v),
+          onChange: (value) {
+            rememberForDays = value;
+          },
+        ),
+      ),
+    );
+  }
+}
