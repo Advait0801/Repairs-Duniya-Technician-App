@@ -18,7 +18,6 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController phoneNumberController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool rememberForDays = false;
   String phoneNumber = '';
   bool flag = false;
 
@@ -104,8 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     textInputType: TextInputType.phone,
                   ),
                   SizedBox(height: 24.v),
-                  _buildRememberForDays(context),
-                  SizedBox(height: 24.v),
                   CustomElevatedButton(
                     text: "Log in",
                     buttonStyle: flag == true
@@ -135,49 +132,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   SizedBox(height: 33.v),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 1.v),
-                        child: Text(
-                          "Don’t have an account?",
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 4.h),
-                        child: Text(
-                          "Sign up",
-                          style: theme.textTheme.titleSmall,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 5.v),
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildRememberForDays(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: EdgeInsets.only(left: 3.h),
-        child: CustomCheckboxButton(
-          alignment: Alignment.centerLeft,
-          text: "Remember for 30 days",
-          value: rememberForDays,
-          padding: EdgeInsets.symmetric(vertical: 1.v),
-          onChange: (value) {
-            rememberForDays = value;
-          },
         ),
       ),
     );

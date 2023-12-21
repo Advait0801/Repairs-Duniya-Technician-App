@@ -308,8 +308,19 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
               ),
               child: imageSelfiePath != null
                   ? GestureDetector(
-                      onTap: () {
-                        showSheet(context, 'selfie');
+                      onTap: () async {
+                        try {
+                          final image = await ImagePicker()
+                              .pickImage(source: ImageSource.camera);
+                          if (image == null) return;
+
+                          final path = File(image.path);
+                          setState(() {
+                            imageSelfiePath = path;
+                          });
+                        } on PlatformException catch (e) {
+                          log(e.toString());
+                        }
                         setState(() {
                           flag = getValue();
                         });
@@ -324,8 +335,19 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                   : Center(
                       child: IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {
-                          showSheet(context, 'selfie');
+                        onPressed: () async {
+                          try {
+                            final image = await ImagePicker()
+                                .pickImage(source: ImageSource.camera);
+                            if (image == null) return;
+
+                            final path = File(image.path);
+                            setState(() {
+                              imageSelfiePath = path;
+                            });
+                          } on PlatformException catch (e) {
+                            log(e.toString());
+                          }
                           setState(() {
                             flag = getValue();
                           });

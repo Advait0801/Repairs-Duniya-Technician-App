@@ -15,7 +15,15 @@ class AppDecoration {
       );
 
   static BoxDecoration get outlineBlueGrayE => BoxDecoration(
-        color: theme.colorScheme.onError,
+        color: appTheme.whiteA700,
+        border: Border.all(
+          color: appTheme.blueGray100E5,
+          width: 1.h,
+        ),
+      );
+
+  static BoxDecoration get outlineBluegray100e5 => BoxDecoration(
+        color: appTheme.gray400,
         border: Border.all(
           color: appTheme.blueGray100E5,
           width: 1.h,
@@ -24,7 +32,7 @@ class AppDecoration {
 
   // Outline decorations
   static BoxDecoration get outlineOnPrimaryContainer => BoxDecoration(
-        color: theme.colorScheme.onError,
+        color: appTheme.whiteA700,
         border: Border.all(
           color: theme.colorScheme.onPrimaryContainer,
           width: 3.h,

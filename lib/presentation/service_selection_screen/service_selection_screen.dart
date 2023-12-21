@@ -2,8 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
-class ServiceSelectionScreen extends StatelessWidget {
+class ServiceSelectionScreen extends StatefulWidget {
   const ServiceSelectionScreen({super.key});
+
+  @override
+  State<ServiceSelectionScreen> createState() => _ServiceSelectionScreenState();
+}
+
+class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
+  bool flag1 = false;
+  bool flag2 = false;
+  bool flag3 = false;
+  bool flag4 = false;
+  bool flag5 = false;
+  bool flag = false;
+
+  bool getValue(){
+    if(flag1 || flag2 || flag3 || flag4 || flag5){
+      return true;
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +74,9 @@ class ServiceSelectionScreen extends StatelessWidget {
                 _buildServiceSelectionRow2(context),
                 SizedBox(height: 30.v),
                 CustomElevatedButton(
+                  buttonStyle: flag == true ? const ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(Colors.black)
+                  ) : const ButtonStyle(),
                   text: "Confirm",
                 ),
                 SizedBox(height: 32.v),
@@ -109,8 +131,15 @@ class ServiceSelectionScreen extends StatelessWidget {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      color: flag1 == true ? const Color(0xFFCBCBCB) : Colors.white,
                     ),
                     child: CustomImageView(
+                      onTap: (){
+                        setState(() {
+                          flag1 = !flag1;
+                          flag = getValue();
+                        });
+                      },
                       imagePath: ImageConstant.imgImage38,
                       height: 37.v,
                       width: 106.h,
@@ -144,8 +173,15 @@ class ServiceSelectionScreen extends StatelessWidget {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      color: flag2 == true ? const Color(0xFFCBCBCB) : Colors.white,
                     ),
                     child: CustomImageView(
+                      onTap: () {
+                        setState(() {
+                          flag2 = !flag2;
+                          flag = getValue();
+                        });
+                      },
                       imagePath: ImageConstant.imgImage34,
                       height: 98.v,
                       width: 65.h,
@@ -172,8 +208,15 @@ class ServiceSelectionScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 14.h),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      color: flag3 == true ? const Color(0xFFCBCBCB) : Colors.white,
                     ),
                     child: CustomImageView(
+                      onTap: () {
+                        setState(() {
+                          flag3 = !flag3;
+                          flag = getValue();
+                        });
+                      },
                       imagePath: ImageConstant.imgImage31,
                       height: 106.v,
                       width: 86.h,
@@ -223,8 +266,15 @@ class ServiceSelectionScreen extends StatelessWidget {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      color: flag4 == true ? const Color(0xFFCBCBCB) : Colors.white,
                     ),
                     child: CustomImageView(
+                      onTap: (){
+                        setState(() {
+                          flag4 = !flag4;
+                          flag = getValue();
+                        });
+                      },
                       imagePath: ImageConstant.imgImage83,
                       height: 85.v,
                       width: 116.h,
@@ -258,8 +308,15 @@ class ServiceSelectionScreen extends StatelessWidget {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
+                      color: flag5 == true ? const Color(0xFFCBCBCB) : Colors.white,
                     ),
                     child: CustomImageView(
+                      onTap: (){
+                        setState(() {
+                          flag5 = !flag5;
+                          flag = getValue();
+                        });
+                      },
                       imagePath: ImageConstant.imgImage78,
                       height: 104.v,
                       width: 94.h,

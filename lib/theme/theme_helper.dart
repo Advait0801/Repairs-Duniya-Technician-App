@@ -64,7 +64,7 @@ class ThemeHelper {
           }
           return colorScheme.onSurface;
         }),
-        side: BorderSide(
+        side: const BorderSide(
           width: 1,
         ),
         visualDensity: const VisualDensity(
@@ -120,7 +120,7 @@ class TextThemes {
 
 /// Class containing the supported color schemes.
 class ColorSchemes {
-  static final primaryColorScheme = ColorScheme.light(
+  static final primaryColorScheme = const ColorScheme.light(
     // Primary colors
     primary: Color(0X19000000),
     primaryContainer: Color(0XFF1A1A1A),
@@ -138,17 +138,18 @@ class ColorSchemes {
 /// Class containing custom colors for a primary theme.
 class PrimaryColors {
   // BlueGray
-  Color get blueGray100E5 => Color(0XE5CDD1D8);
-  Color get blueGray500 => Color(0XFF667084);
-  Color get blueGray700 => Color(0XFF475466);
+  Color get blueGray100E5 => const Color(0XE5CDD1D8);
+  Color get blueGray500 => const Color(0XFF667084);
+  Color get blueGray700 => const Color(0XFF475466);
 
   // Gray
-  Color get gray50 => Color(0XFFFAFAFA);
-  Color get gray900 => Color(0XFF0F1728);
-  Color get gray90001 => Color(0XFF181818);
+  Color get gray400 => const Color(0XFFCBBACB);
+  Color get gray50 => const Color(0XFFFAFAFA);
+  Color get gray900 => const Color(0XFF0F1728);
+  Color get gray90001 => const Color(0XFF181818);
 
   // Grayc
-  Color get gray9000c => Color(0X0C101828);
+  Color get gray9000c => const Color(0X0C101828);
 
   //White
   Color get whiteA700 => Colors.white70;
