@@ -1,6 +1,11 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,6 +25,21 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
   File? imageIDBackPath;
   File? imageSelfiePath;
   bool flag = false;
+  //bool uploaded = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
 
   bool getValue() {
     if (imageIDFrontPath != null &&
@@ -28,6 +48,41 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       return true;
     }
     return false;
+  }
+
+  Future<void> _uploadFiles() async {
+    try {
+      await _uploadFile(imageIDFrontPath!, 'front');
+      await _uploadFile(imageIDBackPath!, 'back');
+      await _uploadFile(imageSelfiePath!, 'selfie');
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCompleteScreen()));
+    } catch (e) {
+      print("Failed to upload files: $e");
+    }
+  }
+
+  Future<void> _uploadFile(File path, String fileName) async {
+    try {
+      File pickedFile = path;
+
+      final Reference storageReference = _storage.ref().child(
+          'uploads/${_user!.uid}/${DateTime.now().millisecondsSinceEpoch}_{$fileName}');
+      final TaskSnapshot snapshot = await storageReference.putFile(pickedFile);
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+
+      await _firestore
+          .collection('technician-users')
+          .doc(_user!.uid)
+          .collection('uploads')
+          .add({
+        'fileName': fileName,
+        'filePath': downloadUrl,
+        'timeStamp': FieldValue.serverTimestamp()
+      });
+    } catch (e) {
+      print("Failed to upload file: $fileName");
+    }
   }
 
   Future<dynamic> showSheet(BuildContext context, String s) {
@@ -175,11 +230,10 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                                 MaterialStatePropertyAll(Colors.black)),
                         text: "Verify",
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const VerificationCompleteScreen()));
+                          _uploadFiles();
+                          // if(uploaded == true){
+                          //   Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCompleteScreen()));
+                          // }
                         },
                       )
                     : CustomElevatedButton(
