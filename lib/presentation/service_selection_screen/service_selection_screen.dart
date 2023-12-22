@@ -1,5 +1,10 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class ServiceSelectionScreen extends StatefulWidget {
@@ -16,12 +21,47 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
   bool flag4 = false;
   bool flag5 = false;
   bool flag = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
 
-  bool getValue(){
-    if(flag1 || flag2 || flag3 || flag4 || flag5){
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
+
+  bool getValue() {
+    if (flag1 || flag2 || flag3 || flag4 || flag5) {
       return true;
     }
     return false;
+  }
+
+  Future<void> uploadServices() async {
+    try {
+      List<String> services = [];
+      if(flag1) services.add('AC Repair');
+      if(flag2) services.add('Fridge Repair');
+      if(flag3) services.add('Washing Machine Repair');
+      if(flag4) services.add('Plumber');
+      if(flag5) services.add('Electrician');
+
+      await _firestore
+          .collection('technician-users')
+          .doc(_user!.uid)
+          .set({
+            'services': FieldValue.arrayUnion(services)
+          });
+
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()));
+    } catch (e) {
+      log("Failed to upload services: $e");
+    }
   }
 
   @override
@@ -74,10 +114,15 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                 _buildServiceSelectionRow2(context),
                 SizedBox(height: 30.v),
                 CustomElevatedButton(
-                  buttonStyle: flag == true ? const ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.black)
-                  ) : const ButtonStyle(),
+                  buttonStyle: flag == true
+                      ? const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.black))
+                      : const ButtonStyle(),
                   text: "Confirm",
+                  onPressed: () {
+                    uploadServices();
+                  },
                 ),
                 SizedBox(height: 32.v),
                 Row(
@@ -131,10 +176,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag1 == true ? const Color(0xFFCBCBCB) : Colors.white,
+                      color: flag1 == true
+                          ? const Color(0xFFCBCBCB)
+                          : Colors.white,
                     ),
                     child: CustomImageView(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           flag1 = !flag1;
                           flag = getValue();
@@ -173,7 +220,9 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag2 == true ? const Color(0xFFCBCBCB) : Colors.white,
+                      color: flag2 == true
+                          ? const Color(0xFFCBCBCB)
+                          : Colors.white,
                     ),
                     child: CustomImageView(
                       onTap: () {
@@ -208,7 +257,9 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 14.h),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag3 == true ? const Color(0xFFCBCBCB) : Colors.white,
+                      color: flag3 == true
+                          ? const Color(0xFFCBCBCB)
+                          : Colors.white,
                     ),
                     child: CustomImageView(
                       onTap: () {
@@ -266,10 +317,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag4 == true ? const Color(0xFFCBCBCB) : Colors.white,
+                      color: flag4 == true
+                          ? const Color(0xFFCBCBCB)
+                          : Colors.white,
                     ),
                     child: CustomImageView(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           flag4 = !flag4;
                           flag = getValue();
@@ -308,10 +361,12 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                     ),
                     decoration: AppDecoration.outlineBlueGrayE.copyWith(
                       borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag5 == true ? const Color(0xFFCBCBCB) : Colors.white,
+                      color: flag5 == true
+                          ? const Color(0xFFCBCBCB)
+                          : Colors.white,
                     ),
                     child: CustomImageView(
-                      onTap: (){
+                      onTap: () {
                         setState(() {
                           flag5 = !flag5;
                           flag = getValue();
@@ -367,5 +422,3 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     );
   }
 }
-
-/// Section Widget

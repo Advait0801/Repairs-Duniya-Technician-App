@@ -25,7 +25,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
   File? imageIDBackPath;
   File? imageSelfiePath;
   bool flag = false;
-  //bool uploaded = false;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,7 +57,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCompleteScreen()));
     } catch (e) {
-      print("Failed to upload files: $e");
+      log("Failed to upload files: $e");
     }
   }
 
@@ -81,7 +80,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
         'timeStamp': FieldValue.serverTimestamp()
       });
     } catch (e) {
-      print("Failed to upload file: $fileName");
+      log("Failed to upload file: $fileName");
     }
   }
 
@@ -231,9 +230,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                         text: "Verify",
                         onPressed: () {
                           _uploadFiles();
-                          // if(uploaded == true){
-                          //   Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCompleteScreen()));
-                          // }
                         },
                       )
                     : CustomElevatedButton(
