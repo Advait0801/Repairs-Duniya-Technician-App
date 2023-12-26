@@ -10,6 +10,10 @@ class AppDecoration {
         color: appTheme.red50,
       );
 
+  static BoxDecoration get fillGray => BoxDecoration(
+        color: appTheme.gray50,
+      );
+
   static BoxDecoration get gradientOnErrorToBlueGray => BoxDecoration(
         border: Border.all(
           color: appTheme.blueGray10002,
@@ -138,6 +142,9 @@ class BorderRadiusStyle {
       );
   static BorderRadius get roundedBorder14 => BorderRadius.circular(
         14.h,
+      );
+  static BorderRadius get roundedBorder15 => BorderRadius.circular(
+        15.h,
       );
   static BorderRadius get roundedBorder22 => BorderRadius.circular(
         22.h,

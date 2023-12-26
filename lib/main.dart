@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
+import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             // Return the appropriate screen based on the login status
             return snapshot.data == true
-                ? const TechnicianHomeScreen()
+                ?  const TechnicianHomeScreen()
                 : const LoginScreen();
           } else {
             // Return a loading indicator or splash screen while checking login status
@@ -57,7 +58,6 @@ class MyApp extends StatelessWidget {
         return true;
       }
     }
-
     // Token is not valid or not present, return false
     return false;
   }

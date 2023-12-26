@@ -72,6 +72,9 @@ class CustomTextStyles {
   static get titleSmallPrimary => theme.textTheme.titleSmall!.copyWith(
         color: theme.colorScheme.primary.withOpacity(1),
       );
+  static get bodySmallGray800 => theme.textTheme.bodySmall!.copyWith(
+        color: appTheme.gray800,
+      );
 }
 
 extension on TextStyle {

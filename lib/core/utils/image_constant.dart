@@ -52,5 +52,13 @@ class ImageConstant {
 
   static String imgImage73 = '$imagePath/img_image_73.png';
 
+  static String imgImage72 = '$imagePath/img_image_72.png';
+
+  static String imgScreenshot120 = '$imagePath/img_screenshot_120.png';
+
+  static String imgVector22x20 = '$imagePath/img_vector_22x20.png';
+
+  static String imgDownChevron = '$imagePath/img_down_chevron.svg';
+
   static String imageNotFound = '$imagePath/image_not_found.png';
 }

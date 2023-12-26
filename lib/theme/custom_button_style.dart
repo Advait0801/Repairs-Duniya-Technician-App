@@ -50,6 +50,29 @@ class CustomButtonStyles {
           ],
         ),
       );
+  
+  static BoxDecoration get gradientPrimaryToGrayDecoration => BoxDecoration(
+        borderRadius: BorderRadius.circular(16.h),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: const Offset(
+              0,
+              4,
+            ),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: const Alignment(0.5, 0),
+          end: const Alignment(0.5, 1),
+          colors: [
+            theme.colorScheme.primary.withOpacity(1),
+            appTheme.gray900,
+          ],
+        ),
+      );
 
   static BoxDecoration get gradientPrimaryToOnPrimaryDecoration =>
       BoxDecoration(
