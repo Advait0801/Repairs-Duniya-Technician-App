@@ -11,9 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
@@ -33,7 +31,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             // Return the appropriate screen based on the login status
             return snapshot.data == true
-                ?  const TechnicianHomeScreen()
+                ? const TechnicianHomeScreen()
                 : const LoginScreen();
           } else {
             // Return a loading indicator or splash screen while checking login status
@@ -41,6 +39,7 @@ class MyApp extends StatelessWidget {
           }
         },
       ),
+      //home: const ConfirmLocationScreen(),
     );
   }
 

@@ -1,71 +1,192 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_final_fields, avoid_init_to_null, unused_local_variable, unused_field, prefer_const_declarations
+
+import 'dart:convert';
+import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_text_form_field.dart';
+import 'package:uuid/uuid.dart';
+import 'package:http/http.dart' as http;
 
-class ConfirmLocationScreen extends StatelessWidget {
-  ConfirmLocationScreen({super.key});
+class ConfirmLocationScreen extends StatefulWidget {
+  const ConfirmLocationScreen({super.key});
 
-  TextEditingController locationController = TextEditingController();
-  // static const LatLng _pGooglePlex = LatLng(37.4233, -122.0848);
+  @override
+  State<ConfirmLocationScreen> createState() => _ConfirmLocationScreenState();
+}
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     body: GoogleMap(
-  //       initialCameraPosition: CameraPosition(
-  //         target: _pGooglePlex,
-  //         zoom: 13,
-  //       ),
-  //     ),
-  //   );
-  // }
+class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
+  final List<String> codes = [
+    '516001',
+    '516002',
+    '516003',
+    '516004',
+    '560076',
+    '560102',
+  ];
+  LatLng? _currentPosition = null;
+  String _postalCode = '';
+  String _currentAddress = '';
+  TextEditingController _controller = TextEditingController();
+  var uuid = const Uuid();
+  String? sessionToken = '1234';
+  List<dynamic> _placesList = [];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
+
+  Future<void> getUsersCurrentLocation() async {
+    bool _serviceEnabled;
+    LocationPermission _permission;
+
+    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!_serviceEnabled) {
+      return Future.error('Location Services are disabled');
+    }
+
+    _permission = await Geolocator.checkPermission();
+    if (_permission == LocationPermission.denied) {
+      _permission = await Geolocator.requestPermission();
+
+      if (_permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (_permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are denied forever, cannot request permission');
+    }
+
+    Position _position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(_position.latitude, _position.longitude);
+    Placemark place = placemarks[0];
+
+    setState(() {
+      _currentPosition = LatLng(_position.latitude, _position.longitude);
+      _currentAddress =
+          '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+      _postalCode = place.postalCode!;
+    });
+  }
+
+  void onChange() {
+    if (sessionToken == null) {
+      setState(() {
+        sessionToken = uuid.v4();
+      });
+    }
+
+    getSuggestion(_controller.text);
+  }
+
+  void getSuggestion(String s) async {
+    String requestUrl =
+        '$GOOGLE_MAPS_PLACES_API?input=$s&key=$GOOGLE_MAPS_API_KEY&sessiontoken=$sessionToken';
+    var response = await http.get(Uri.parse(requestUrl));
+    print(response.body.toString());
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _placesList = jsonDecode(response.body.toString())['predictions'];
+      });
+    } else {
+      throw Exception('Failed........');
+    }
+  }
+
+  Future<void> uploadLocation() async {
+    try {
+      await _firestore
+          .collection('technician-users')
+          .doc(_user!.uid)
+          .set({'location': _currentAddress});
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUsersCurrentLocation();
+    _controller.addListener(() {
+      onChange();
+    });
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    mediaQueryData = MediaQuery.of(context);
-
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: SizedBox(
-          height: 894.v,
-          width: double.maxFinite,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgScreenshot120,
-                height: 1077.v,
-                width: 430.h,
-                alignment: Alignment.bottomCenter,
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.only(bottom: 2.v),
-                    child: Column(
-                      children: [
-                        _buildPickALocationFrame(context),
-                        SizedBox(height: 148.v),
-                        CustomImageView(
-                          imagePath: ImageConstant.imgVector22x20,
-                          height: 50.v,
-                          width: 46.h,
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.only(left: 171.h),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildPickALocationFrame(context),
+            _controller.text.isEmpty
+                ? Expanded(
+                    child: _currentPosition == null
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : GoogleMap(
+                            initialCameraPosition: CameraPosition(
+                              target: _currentPosition!,
+                              zoom: 13,
+                            ),
+                            zoomControlsEnabled: false,
+                            markers: {
+                              Marker(
+                                  markerId: const MarkerId('currentLcoation'),
+                                  icon: BitmapDescriptor.defaultMarker,
+                                  position: _currentPosition!)
+                            },
+                          ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: _placesList.length,
+                      itemBuilder: (context, index) => ListTile(
+                        onTap: () async {
+                          List<Location> l = await locationFromAddress(
+                              _placesList[index]['description']);
+                          LatLng latLng =
+                              LatLng(l.last.latitude, l.last.longitude);
+                          List<Placemark> places =
+                              await placemarkFromCoordinates(
+                                  latLng.latitude, latLng.longitude);
+                          Placemark place = places[0];
+                          setState(() {
+                            _currentPosition = latLng;
+                            _currentAddress =
+                                '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+                            _postalCode = place.postalCode!;
+                          });
+                          _controller.clear();
+                        },
+                        title: Text(
+                          _placesList[index]['description'],
+                          style: CustomTextStyles.bodySmallGray800,
                         ),
-                        SizedBox(height: 197.v),
-                        _buildConfirmLocationFrame(context),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-          ),
+            _buildConfirmLocationFrame(context)
+          ],
         ),
       ),
     );
@@ -91,7 +212,7 @@ class ConfirmLocationScreen extends StatelessWidget {
           SizedBox(height: 9.v),
           CustomTextFormField(
             onChanged: (value) {},
-            controller: locationController,
+            controller: _controller,
             hintText: "Willowbrook Heights, New Delhi - 110001, India",
             textInputAction: TextInputAction.done,
             prefix: Container(
@@ -175,7 +296,7 @@ class ConfirmLocationScreen extends StatelessWidget {
                       right: 6.h,
                     ),
                     child: Text(
-                      "123, Maplewood Avenue, Willowbrook Heights, New Delhi - 110001, India",
+                      _currentAddress,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: CustomTextStyles.bodySmallGray800,
@@ -187,6 +308,42 @@ class ConfirmLocationScreen extends StatelessWidget {
           ),
           SizedBox(height: 20.v),
           CustomElevatedButton(
+            onPressed: () {
+              if (codes.contains(_postalCode) == true) {
+                uploadLocation();
+                final snackBar = const SnackBar(
+                  content: Text('Location set successfully!!'),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const IdVerificationScreen()));
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          content: Text('Invalid pincode....',
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize:
+                                      MediaQuery.of(context).size.width * 0.1)),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text(
+                                'OK',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: mediaQueryData.size.width * 0.05),
+                              ),
+                            )
+                          ],
+                        ));
+              }
+            },
             text: "Yes, that’s my location",
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientPrimaryToGrayDecoration,

@@ -50,7 +50,7 @@ class CustomButtonStyles {
           ],
         ),
       );
-  
+
   static BoxDecoration get gradientPrimaryToGrayDecoration => BoxDecoration(
         borderRadius: BorderRadius.circular(16.h),
         boxShadow: [

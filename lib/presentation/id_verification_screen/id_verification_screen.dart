@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:ffi';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +53,10 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const VerificationCompleteScreen()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const VerificationCompleteScreen()));
     } catch (e) {
       log("Failed to upload files: $e");
     }
@@ -230,6 +231,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                         text: "Verify",
                         onPressed: () {
                           _uploadFiles();
+                          const CircularProgressIndicator();
                         },
                       )
                     : CustomElevatedButton(

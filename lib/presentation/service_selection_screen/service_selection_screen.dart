@@ -45,20 +45,21 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
   Future<void> uploadServices() async {
     try {
       List<String> services = [];
-      if(flag1) services.add('AC Repair');
-      if(flag2) services.add('Fridge Repair');
-      if(flag3) services.add('Washing Machine Repair');
-      if(flag4) services.add('Plumber');
-      if(flag5) services.add('Electrician');
+      if (flag1) services.add('AC Repair');
+      if (flag2) services.add('Fridge Repair');
+      if (flag3) services.add('Washing Machine Repair');
+      if (flag4) services.add('Plumber');
+      if (flag5) services.add('Electrician');
 
       await _firestore
           .collection('technician-users')
           .doc(_user!.uid)
-          .set({
-            'services': FieldValue.arrayUnion(services)
-          });
+          .set({'services': FieldValue.arrayUnion(services)});
 
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const TechnicianHomeScreen()));
     } catch (e) {
       log("Failed to upload services: $e");
     }

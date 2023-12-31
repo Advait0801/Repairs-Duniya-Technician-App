@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
-import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
+import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_pin_code_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -139,7 +139,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const IdVerificationScreen()),
+                                    const ConfirmLocationScreen()),
                             (route) => false);
                       }
                     } catch (e) {
