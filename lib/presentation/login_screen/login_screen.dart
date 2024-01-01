@@ -100,6 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: "Enter your phone number",
                     textInputAction: TextInputAction.done,
                     textInputType: TextInputType.phone,
+                    hintStyle: const TextStyle(color: Colors.black),
                   ),
                   SizedBox(height: 24.v),
                   CustomElevatedButton(

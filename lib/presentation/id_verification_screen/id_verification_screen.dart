@@ -230,8 +230,8 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                                 MaterialStatePropertyAll(Colors.black)),
                         text: "Verify",
                         onPressed: () {
-                          _uploadFiles();
                           const CircularProgressIndicator();
+                          _uploadFiles();
                         },
                       )
                     : CustomElevatedButton(

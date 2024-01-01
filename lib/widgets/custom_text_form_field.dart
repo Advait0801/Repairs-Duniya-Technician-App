@@ -9,7 +9,7 @@ class CustomTextFormField extends StatelessWidget {
     this.controller,
     required this.onChanged,
     this.focusNode,
-    this.autofocus = true,
+    this.autofocus = false,
     this.textStyle,
     this.obscureText = false,
     this.textInputAction = TextInputAction.next,
@@ -98,6 +98,8 @@ class CustomTextFormField extends StatelessWidget {
           decoration: decoration,
           onChanged: (value) => onChanged(value),
           validator: validator,
+          showCursor: true,
+          cursorColor: Colors.black,
         ),
       );
   InputDecoration get decoration => InputDecoration(

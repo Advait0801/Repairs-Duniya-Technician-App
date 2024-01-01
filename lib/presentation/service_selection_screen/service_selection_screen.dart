@@ -51,10 +51,10 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
       if (flag4) services.add('Plumber');
       if (flag5) services.add('Electrician');
 
-      await _firestore
-          .collection('technician-users')
-          .doc(_user!.uid)
-          .set({'services': FieldValue.arrayUnion(services)});
+      await _firestore.collection('technician-users').doc(_user!.uid).set(
+        {'services': FieldValue.arrayUnion(services)},
+        SetOptions(merge: true),
+      );
 
       Navigator.push(
           context,

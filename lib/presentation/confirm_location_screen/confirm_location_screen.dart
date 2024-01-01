@@ -110,6 +110,11 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
           .collection('technician-users')
           .doc(_user!.uid)
           .set({'location': _currentAddress});
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const IdVerificationScreen()));
     } catch (e) {
       log(e.toString());
     }
@@ -118,14 +123,14 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   @override
   void initState() {
     super.initState();
-    getUsersCurrentLocation();
-    _controller.addListener(() {
-      onChange();
-    });
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
       });
+    });
+    getUsersCurrentLocation();
+    _controller.addListener(() {
+      onChange();
     });
   }
 
@@ -133,12 +138,12 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildPickALocationFrame(context),
-            _controller.text.isEmpty
-                ? Expanded(
+        body: _controller.text.isEmpty
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildPickALocationFrame(context),
+                  Expanded(
                     child: _currentPosition == null
                         ? const Center(
                             child: CircularProgressIndicator(),
@@ -156,8 +161,15 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                                   position: _currentPosition!)
                             },
                           ),
-                  )
-                : Expanded(
+                  ),
+                  _buildConfirmLocationFrame(context)
+                ],
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildPickALocationFrame(context),
+                  Expanded(
                     child: ListView.builder(
                       itemCount: _placesList.length,
                       itemBuilder: (context, index) => ListTile(
@@ -185,9 +197,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                       ),
                     ),
                   ),
-            _buildConfirmLocationFrame(context)
-          ],
-        ),
+                ],
+              ),
       ),
     );
   }
@@ -311,14 +322,10 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             onPressed: () {
               if (codes.contains(_postalCode) == true) {
                 uploadLocation();
-                final snackBar = const SnackBar(
-                  content: Text('Location set successfully!!'),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const IdVerificationScreen()));
+                // final snackBar = const SnackBar(
+                //   content: Text('Location set successfully!!'),
+                // );
+                // ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else {
                 showDialog(
                     context: context,
