@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilelist_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
@@ -6,9 +7,14 @@ import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/app_bar/custom_app_bar.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
-class TechnicianHomeScreen extends StatelessWidget {
+class TechnicianHomeScreen extends StatefulWidget {
   const TechnicianHomeScreen({super.key});
 
+  @override
+  State<TechnicianHomeScreen> createState() => _TechnicianHomeScreenState();
+}
+
+class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -70,93 +76,45 @@ class TechnicianHomeScreen extends StatelessWidget {
     );
   }
 
-  /// Section Widget
   Widget _buildFrame(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4.v),
       decoration: AppDecoration.gradientPrimaryToGray,
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(height: 14.v),
-          CustomAppBar(
-            title: Padding(
-              padding: EdgeInsets.only(left: 26.h),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                          top: 5.v,
-                          bottom: 3.v,
-                        ),
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(
-                                  endIndent: 6.h,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(
-                                  endIndent: 6.h,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      AppbarTitle(
-                        text: "Home",
-                        margin: EdgeInsets.only(left: 42.h),
-                      ),
-                    ],
-                  ),
-                ],
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 25.v, vertical: 16.h),
+                child: CustomImageView(
+                  imagePath: ImageConstant.imgMenu,
+                  height: 24.adaptSize,
+                  width: 24.adaptSize,
+                  fit: BoxFit.contain,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            actions: [
+              AppbarTitle(text: 'Hello'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
               AppbarTrailingImage(
                 imagePath: ImageConstant.imgGroup,
                 margin: EdgeInsets.only(
                   left: 38.h,
                   top: 3.v,
-                  right: 8.h,
                 ),
               ),
               AppbarTrailingImage(
                 imagePath: ImageConstant.imgGroup5139931,
-                margin: EdgeInsets.only(
-                  left: 40.h,
-                  right: 46.h,
-                ),
+                margin: EdgeInsets.only(left: 24.h, right: 46.h),
               ),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -443,7 +401,7 @@ class TechnicianHomeScreen extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 9.h),
         child: ListView.separated(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           shrinkWrap: true,
           separatorBuilder: (
             context,
@@ -455,7 +413,7 @@ class TechnicianHomeScreen extends StatelessWidget {
           },
           itemCount: 3,
           itemBuilder: (context, index) {
-            return UserprofilelistItemWidget();
+            return const UserprofilelistItemWidget();
           },
         ),
       ),

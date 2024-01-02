@@ -8,6 +8,8 @@ class ImageConstant {
   // OTP One images
   static String imgImage69 = '$imagePath/img_image_69.png';
 
+  static String imgMenu = '$imagePath/img_menu.png';
+
   // Technician Home images
   static String imgGroup = '$imagePath/img_group.svg';
 
