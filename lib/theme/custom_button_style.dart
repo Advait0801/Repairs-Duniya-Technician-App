@@ -4,6 +4,53 @@ import 'package:technician_app/core/app_export.dart';
 /// A class that offers pre-defined button styles for customizing button appearance.
 class CustomButtonStyles {
   // text button style
+  static BoxDecoration get gradientLightGreenAToLightGreenADecoration =>
+      BoxDecoration(
+        borderRadius: BorderRadius.circular(13.h),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: const Offset(
+              0,
+              3,
+            ),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: const Alignment(0.5, 0),
+          end: const Alignment(0.5, 1),
+          colors: [
+            appTheme.lightGreenA700,
+            appTheme.lightGreenA70001,
+          ],
+        ),
+      );
+
+  static BoxDecoration get gradientRedAToRedTL13Decoration => BoxDecoration(
+        borderRadius: BorderRadius.circular(13.h),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: const Offset(
+              0,
+              3,
+            ),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: const Alignment(0.5, 0),
+          end: const Alignment(0.5, 1),
+          colors: [
+            appTheme.redA70001,
+            appTheme.red800,
+          ],
+        ),
+      );
+
   static BoxDecoration get gradientLightGreenAToOnPrimaryContainerDecoration =>
       BoxDecoration(
         borderRadius: BorderRadius.circular(13.h),

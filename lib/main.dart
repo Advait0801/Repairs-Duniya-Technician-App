@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
+import 'package:technician_app/presentation/technician_menu_screen/technician_menu_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
       //     }
       //   },
       // ),
-      home: const TechnicianHomeScreen(),
+      home: const TechnicianMenuScreen(),
     );
   }
 

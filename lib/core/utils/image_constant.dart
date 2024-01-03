@@ -8,30 +8,23 @@ class ImageConstant {
   // OTP One images
   static String imgImage69 = '$imagePath/img_image_69.png';
 
+  // Confirm Location images
+  static String imgScreenshot120 = '$imagePath/img_screenshot_120.png';
+
+  static String imgVector22x20 = '$imagePath/img_vector_22x20.png';
+
+  static String imgDownChevron = '$imagePath/img_down_chevron.svg';
+
+  static String imgImage72 = '$imagePath/img_image_72.png';
+
+  // Technician Menu images
+  static String imgImage64 = '$imagePath/img_image_64.png';
+
+  static String imgImage63 = '$imagePath/img_image_63.png';
+
+  static String imgImage67 = '$imagePath/img_image_67.png';
+
   static String imgMenu = '$imagePath/img_menu.png';
-
-  // Technician Home images
-  static String imgGroup = '$imagePath/img_group.svg';
-
-  static String imgGroup5139931 = '$imagePath/img_group_5139931.svg';
-
-  static String imgEllipse13 = '$imagePath/img_ellipse_13.png';
-
-  static String imgImage90 = '$imagePath/img_image_90.png';
-
-  static String imgGroupOnprimary = '$imagePath/img_group_onprimary.svg';
-
-  static String imgImage86 = '$imagePath/img_image_86.png';
-
-  static String imgImage87 = '$imagePath/img_image_87.png';
-
-  static String imgImage88 = '$imagePath/img_image_88.png';
-
-  static String imgVector = '$imagePath/img_vector.svg';
-
-  static String imgImage74 = '$imagePath/img_image_74.png';
-
-  static String imgImage89 = '$imagePath/img_image_89.png';
 
   // Common images
   static String imgImage91 = '$imagePath/img_image_91.png';
@@ -54,13 +47,27 @@ class ImageConstant {
 
   static String imgImage73 = '$imagePath/img_image_73.png';
 
-  static String imgImage72 = '$imagePath/img_image_72.png';
+  static String imgGroup = '$imagePath/img_group.svg';
 
-  static String imgScreenshot120 = '$imagePath/img_screenshot_120.png';
+  static String imgGroup5139931 = '$imagePath/img_group_5139931.svg';
 
-  static String imgVector22x20 = '$imagePath/img_vector_22x20.png';
+  static String imgEllipse13 = '$imagePath/img_ellipse_13.png';
 
-  static String imgDownChevron = '$imagePath/img_down_chevron.svg';
+  static String imgImage90 = '$imagePath/img_image_90.png';
 
-  static String imageNotFound = '$imagePath/image_not_found.png';
+  static String imgGroupOnprimary = '$imagePath/img_group_onprimary.svg';
+
+  static String imgImage86 = '$imagePath/img_image_86.png';
+
+  static String imgImage87 = '$imagePath/img_image_87.png';
+
+  static String imgImage88 = '$imagePath/img_image_88.png';
+
+  static String imgVector = '$imagePath/img_vector.svg';
+
+  static String imgImage74 = '$imagePath/img_image_74.png';
+
+  static String imgImage89 = '$imagePath/img_image_89.png';
+
+  static String imageNotFound = 'assets/images/image_not_found.png';
 }

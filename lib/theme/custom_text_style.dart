@@ -10,10 +10,23 @@ class CustomTextStyles {
   static get bodyLargeBluegray500 => theme.textTheme.bodyLarge!.copyWith(
         color: appTheme.blueGray500,
       );
+  static get bodyLargeOpenSansGray500 =>
+      theme.textTheme.bodyLarge!.openSans.copyWith(
+        color: appTheme.gray500,
+      );
+  static get bodyLargeOpenSansOnError =>
+      theme.textTheme.bodyLarge!.openSans.copyWith(
+        color: theme.colorScheme.onError,
+      );
   static get bodyLargeErrorContainer => theme.textTheme.bodyLarge!.copyWith(
         color: theme.colorScheme.errorContainer,
       );
   static get bodyMedium14 => theme.textTheme.bodyMedium!.copyWith(
+        fontSize: 14.fSize,
+      );
+  static get bodyMediumOpenSansOnError =>
+      theme.textTheme.bodyMedium!.openSans.copyWith(
+        color: theme.colorScheme.onError,
         fontSize: 14.fSize,
       );
   static get bodyMediumRed500 => theme.textTheme.bodyMedium!.copyWith(
@@ -25,6 +38,9 @@ class CustomTextStyles {
   static get bodySmallInterBluegray700 =>
       theme.textTheme.bodySmall!.inter.copyWith(
         color: appTheme.blueGray700,
+        fontSize: 8.fSize,
+      );
+  static get bodySmallInter => theme.textTheme.bodySmall!.inter.copyWith(
         fontSize: 8.fSize,
       );
   static get bodySmallInterBluegray700_1 =>
@@ -44,6 +60,12 @@ class CustomTextStyles {
   static get labelLargeInterGray800 =>
       theme.textTheme.labelLarge!.inter.copyWith(
         color: appTheme.gray800,
+        fontSize: 12.fSize,
+        fontWeight: FontWeight.w500,
+      );
+  static get labelLargeInterGray80001 =>
+      theme.textTheme.labelLarge!.inter.copyWith(
+        color: appTheme.gray80001,
         fontSize: 12.fSize,
         fontWeight: FontWeight.w500,
       );

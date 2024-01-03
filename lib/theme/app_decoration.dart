@@ -9,7 +9,9 @@ class AppDecoration {
   static BoxDecoration get fillRed => BoxDecoration(
         color: appTheme.red50,
       );
-
+  static BoxDecoration get fillPrimary => BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(1),
+      );
   static BoxDecoration get fillGray => BoxDecoration(
         color: appTheme.gray50,
       );
@@ -55,6 +57,17 @@ class AppDecoration {
         ),
       );
 
+  static BoxDecoration get gradientPrimaryToOnPrimaryContainer => BoxDecoration(
+        gradient: LinearGradient(
+          begin: const Alignment(0.5, 0),
+          end: const Alignment(0.5, 1),
+          colors: [
+            theme.colorScheme.primary.withOpacity(1),
+            theme.colorScheme.onPrimaryContainer,
+          ],
+        ),
+      );
+
   static BoxDecoration get gradientPrimaryToGray => BoxDecoration(
         gradient: LinearGradient(
           begin: const Alignment(0.5, 0),
@@ -87,6 +100,14 @@ class AppDecoration {
         border: Border.all(
           color: appTheme.blueGray10002.withOpacity(0.9),
           width: 1.h,
+        ),
+      );
+  static BoxDecoration get outlineBluegray100 => BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: appTheme.blueGray100,
+            width: 1.h,
+          ),
         ),
       );
   static BoxDecoration get outlineBluegray10002 => BoxDecoration(
@@ -154,6 +175,9 @@ class BorderRadiusStyle {
       );
   static BorderRadius get roundedBorder57 => BorderRadius.circular(
         57.h,
+      );
+  static BorderRadius get customBorderTL5 => BorderRadius.vertical(
+        top: Radius.circular(5.h),
       );
 }
 
