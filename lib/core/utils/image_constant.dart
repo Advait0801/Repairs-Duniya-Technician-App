@@ -26,6 +26,12 @@ class ImageConstant {
 
   static String imgMenu = '$imagePath/img_menu.png';
 
+  static String homeIcon = '$imagePath/home_icon.png';
+
+  static String bookingIcon = '$imagePath/bookings_icon.png';
+
+  static String contanctIcon = '$imagePath/contacts_icon.png';
+
   // Common images
   static String imgImage91 = '$imagePath/img_image_91.png';
 
