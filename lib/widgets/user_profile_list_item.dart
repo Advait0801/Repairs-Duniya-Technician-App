@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 
-// ignore: must_be_immutable
-class Userprofilelist1ItemWidget extends StatelessWidget {
-  const Userprofilelist1ItemWidget({Key? key})
+class UserprofilelistItemWidget extends StatelessWidget {
+  const UserprofilelistItemWidget({Key? key})
       : super(
           key: key,
         );
@@ -124,7 +123,7 @@ class Userprofilelist1ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "New Delhi - 110001, India",
-                      style: theme.textTheme.bodySmall,
+                      style: CustomTextStyles.bodySmallBluegray700,
                     ),
                   ),
                 ],

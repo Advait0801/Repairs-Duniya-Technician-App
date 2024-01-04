@@ -49,6 +49,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
 
   Future<void> _uploadFiles() async {
     try {
+      const CircularProgressIndicator();
       await _uploadFile(imageIDFrontPath!, 'front');
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');
@@ -72,7 +73,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       String downloadUrl = await snapshot.ref.getDownloadURL();
 
       await _firestore
-          .collection('technician-users')
+          .collection('technicians')
           .doc(_user!.uid)
           .collection('uploads')
           .add({
@@ -230,7 +231,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
                                 MaterialStatePropertyAll(Colors.black)),
                         text: "Verify",
                         onPressed: () {
-                          const CircularProgressIndicator();
                           _uploadFiles();
                         },
                       )

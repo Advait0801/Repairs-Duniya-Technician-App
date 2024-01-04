@@ -1,10 +1,16 @@
-import 'package:flutter/foundation.dart';
-import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilelist_item_widget.dart';
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:technician_app/widgets/user_profile_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
-import 'package:technician_app/widgets/app_bar/custom_app_bar.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class TechnicianHomeScreen extends StatefulWidget {
@@ -15,6 +21,67 @@ class TechnicianHomeScreen extends StatefulWidget {
 }
 
 class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  User? _user;
+  LatLng? _currentPosition;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+    getCurrentLocation();
+    setupDeviceToken();
+    _initializePermission();
+  }
+
+  Future<void> getCurrentLocation() async {
+    Position _position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _currentPosition = LatLng(_position.latitude, _position.longitude);
+    });
+
+    await _firestore
+        .collection('technicians')
+        .doc(_user!.uid)
+        .collection('location')
+        .doc('currentLocation')
+        .set({
+      'latitude': _currentPosition!.latitude,
+      'longitude': _currentPosition!.longitude
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _initializePermission() async {
+    bool isDenied = await Permission.notification.isDenied;
+    if (isDenied) {
+      await Permission.notification.request();
+    }
+  }
+
+  Future<void> setupDeviceToken() async {
+    String? token = await _messaging.getToken();
+    _uploadToken(token!);
+    _messaging.onTokenRefresh.listen(_uploadToken);
+  }
+
+  Future<void> _uploadToken(String token) async {
+    try {
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .set({'token': token}, SetOptions(merge: true));
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -96,7 +163,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                   color: Colors.white,
                 ),
               ),
-              AppbarTitle(text: 'Hello'),
+              AppbarTitle(text: 'Home'),
             ],
           ),
           Row(

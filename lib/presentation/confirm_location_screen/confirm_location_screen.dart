@@ -93,7 +93,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     String requestUrl =
         '$GOOGLE_MAPS_PLACES_API?input=$s&key=$GOOGLE_MAPS_API_KEY&sessiontoken=$sessionToken';
     var response = await http.get(Uri.parse(requestUrl));
-    print(response.body.toString());
 
     if (response.statusCode == 200) {
       setState(() {
@@ -107,9 +106,14 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   Future<void> uploadLocation() async {
     try {
       await _firestore
-          .collection('technician-users')
+          .collection('technicians')
           .doc(_user!.uid)
-          .set({'location': _currentAddress});
+          .collection('location')
+          .doc('homeLocation')
+          .set({
+        'latitude': _currentPosition!.latitude,
+        'longitude': _currentPosition!.longitude
+      }, SetOptions(merge: true));
 
       Navigator.push(
           context,
@@ -322,10 +326,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             onPressed: () {
               if (codes.contains(_postalCode) == true) {
                 uploadLocation();
-                // final snackBar = const SnackBar(
-                //   content: Text('Location set successfully!!'),
-                // );
-                // ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else {
                 showDialog(
                     context: context,

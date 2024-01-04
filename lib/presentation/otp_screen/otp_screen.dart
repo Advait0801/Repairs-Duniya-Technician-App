@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sms_autofill/sms_autofill.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -21,6 +23,8 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   String otp = '';
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
   bool flag = false;
 
   void saveLogin(String token) async {
@@ -100,21 +104,20 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 SizedBox(height: 30.v),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.h),
-                  child: CustomPinCodeTextField(
-                    context: context,
-                    onChanged: (value) {
-                      otp = value;
-                      setState(() {
-                        if (otp.length == 6) {
-                          flag = true;
-                        } else {
-                          flag = false;
-                        }
-                      });
-                    },
-                  ),
-                ),
+                    padding: EdgeInsets.symmetric(horizontal: 10.h),
+                    child: CustomPinCodeTextField(
+                      context: context,
+                      onChanged: (value) {
+                        setState(() {
+                          otp = value;
+                          if (otp.length == 6) {
+                            flag = true;
+                          } else {
+                            flag = false;
+                          }
+                        });
+                      },
+                    )),
                 SizedBox(height: 24.v),
                 CustomElevatedButton(
                   text: "Verify",
@@ -132,15 +135,25 @@ class _OtpScreenState extends State<OtpScreen> {
                       UserCredential authResult =
                           await _auth.signInWithCredential(credential);
                       String? userToken = await authResult.user?.getIdToken();
+                      setState(() {
+                        _user = authResult.user;
+                      });
 
                       if (userToken != null) {
+                        await _firestore
+                            .collection('technicians')
+                            .doc(_user!.uid)
+                            .set({
+                          'userId': _user!.uid,
+                          'phone': widget.phoneNumber,
+                        });
                         saveLogin(userToken);
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ConfirmLocationScreen()),
-                            (route) => false);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const ConfirmLocationScreen()),
+                        );
                       }
                     } catch (e) {
                       log(e.toString());

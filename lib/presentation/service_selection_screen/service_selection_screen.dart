@@ -24,6 +24,14 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
+  List<String> services = [];
+  List<String> extraServices = [
+    'Geyser',
+    'Air Cooler',
+    'MicroWave/Oven'
+        'Painter',
+    'CCTV'
+  ];
 
   @override
   void initState() {
@@ -44,25 +52,61 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
 
   Future<void> uploadServices() async {
     try {
-      List<String> services = [];
-      if (flag1) services.add('AC Repair');
-      if (flag2) services.add('Fridge Repair');
-      if (flag3) services.add('Washing Machine Repair');
+      if (flag1) services.add('AC');
+      if (flag2) services.add('Fridge');
+      if (flag3) services.add('Washing Machine');
       if (flag4) services.add('Plumber');
       if (flag5) services.add('Electrician');
 
-      await _firestore.collection('technician-users').doc(_user!.uid).set(
+      await _firestore.collection('technicians').doc(_user!.uid).set(
         {'services': FieldValue.arrayUnion(services)},
         SetOptions(merge: true),
       );
 
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => const TechnicianHomeScreen()));
+          MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
+          (route) => false);
     } catch (e) {
       log("Failed to upload services: $e");
     }
+  }
+
+  void showSheet() {
+    services = [];
+    showModalBottomSheet(
+      isDismissible: false,
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => Column(
+        children: [
+          ListView.builder(
+            itemCount: extraServices.length,
+            itemBuilder: (context, index) => CheckboxListTile(
+              value: true,
+              title: Text(
+                extraServices[index],
+                style: CustomTextStyles.bodyMedium14,
+              ),
+              onChanged: (bool? value) {
+                value = value;
+                setState(() {
+                  services.add(extraServices[index]);
+                });
+              },
+              selectedTileColor: appTheme.gray400,
+            ),
+          ),
+          SizedBox(
+            height: 5.h,
+          ),
+          CustomElevatedButton(
+            text: 'Done',
+            onPressed: () => Navigator.pop(context),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -126,24 +170,6 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   },
                 ),
                 SizedBox(height: 32.v),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowLeft,
-                      height: 20.adaptSize,
-                      width: 20.adaptSize,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.h),
-                      child: Text(
-                        "Back",
-                        style: theme.textTheme.titleSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5.v),
               ],
             ),
           ),
@@ -401,6 +427,7 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                       borderRadius: BorderRadiusStyle.roundedBorder10,
                     ),
                     child: CustomImageView(
+                      onTap: showSheet,
                       imagePath: ImageConstant.imgFrame5140235,
                       height: 9.v,
                       width: 55.h,

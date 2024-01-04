@@ -1,10 +1,8 @@
-import '../technician_menu_screen/widgets/home_item_widget.dart';
-import '../technician_menu_screen/widgets/userprofilelist1_item_widget.dart';
+import 'package:technician_app/widgets/user_profile_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
-import 'package:technician_app/widgets/app_bar/custom_app_bar.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class TechnicianMenuScreen extends StatelessWidget {
@@ -78,110 +76,48 @@ class TechnicianMenuScreen extends StatelessWidget {
       decoration: AppDecoration.gradientPrimaryToOnPrimaryContainer,
       child: Column(
         children: [
-          CustomAppBar(
-            height: 34.v,
-            title: Padding(
-              padding: EdgeInsets.only(left: 26.h),
-              child: Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.v),
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(
-                                  endIndent: 6.h,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(),
-                              ),
-                            ),
-                            SizedBox(height: 3.v),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: SizedBox(
-                                width: 27.h,
-                                child: Divider(
-                                  endIndent: 6.h,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      AppbarTitle(
-                        text: "Menu",
-                        margin: EdgeInsets.only(left: 42.h),
-                      ),
-                    ],
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 25.v, vertical: 16.h),
+                    child: CustomImageView(
+                      imagePath: ImageConstant.imgMenu,
+                      height: 24.adaptSize,
+                      width: 24.adaptSize,
+                      fit: BoxFit.contain,
+                      color: Colors.white,
+                    ),
                   ),
+                  AppbarTitle(text: 'Menu'),
                 ],
               ),
-            ),
-            actions: [
-              AppbarTrailingImage(
-                imagePath: ImageConstant.imgGroup,
-                margin: EdgeInsets.only(
-                  left: 32.h,
-                  top: 3.v,
-                  right: 7.h,
-                ),
-              ),
-              AppbarTrailingImage(
-                imagePath: ImageConstant.imgGroup5139931,
-                margin: EdgeInsets.only(
-                  left: 40.h,
-                  right: 39.h,
-                ),
-              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  AppbarTrailingImage(
+                    imagePath: ImageConstant.imgGroup,
+                    margin: EdgeInsets.only(
+                      left: 38.h,
+                      top: 3.v,
+                    ),
+                  ),
+                  AppbarTrailingImage(
+                    imagePath: ImageConstant.imgGroup5139931,
+                    margin: EdgeInsets.only(left: 24.h, right: 46.h),
+                  ),
+                ],
+              )
             ],
           ),
           SizedBox(height: 48.v),
-          Align(
-            alignment: Alignment.centerRight,
-            child: SizedBox(
-              height: 110.v,
-              child: ListView.separated(
-                padding: EdgeInsets.only(
-                  left: 143.h,
-                  right: 27.h,
-                ),
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (
-                  context,
-                  index,
-                ) {
-                  return SizedBox(
-                    width: 27.h,
-                  );
-                },
-                itemCount: 6,
-                itemBuilder: (context, index) {
-                  return HomeItemWidget();
-                },
-              ),
-            ),
-          ),
-          SizedBox(height: 38.v),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          )
         ],
       ),
     );
@@ -468,7 +404,7 @@ class TechnicianMenuScreen extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 9.h),
         child: ListView.separated(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           shrinkWrap: true,
           separatorBuilder: (
             context,
@@ -480,7 +416,7 @@ class TechnicianMenuScreen extends StatelessWidget {
           },
           itemCount: 3,
           itemBuilder: (context, index) {
-            return Userprofilelist1ItemWidget();
+            return const UserprofilelistItemWidget();
           },
         ),
       ),
