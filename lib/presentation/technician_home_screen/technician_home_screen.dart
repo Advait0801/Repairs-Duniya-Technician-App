@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
 import 'package:technician_app/widgets/user_profile_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
@@ -37,28 +38,56 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     });
     getCurrentLocation();
     setupDeviceToken();
-    _initializePermission();
+    initializePermission();
   }
 
   Future<void> getCurrentLocation() async {
-    Position _position = await Geolocator.getCurrentPosition(
+    Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      _currentPosition = LatLng(_position.latitude, _position.longitude);
+      _currentPosition = LatLng(position.latitude, position.longitude);
     });
 
-    await _firestore
+    bool documentExists = await _firestore
         .collection('technicians')
         .doc(_user!.uid)
         .collection('location')
         .doc('currentLocation')
-        .set({
-      'latitude': _currentPosition!.latitude,
-      'longitude': _currentPosition!.longitude
-    }, SetOptions(merge: true));
+        .get()
+        .then((DocumentSnapshot document) => document.exists);
+
+    if (documentExists == true) {
+      try {
+        await _firestore
+            .collection('technicians')
+            .doc(_user!.uid)
+            .collection('location')
+            .doc('currentLocation')
+            .update({
+          'latitude': _currentPosition!.latitude,
+          'longitude': _currentPosition!.longitude
+        });
+      } catch (e) {
+        log(e.toString());
+      }
+    } else {
+      try {
+        await _firestore
+            .collection('technicians')
+            .doc(_user!.uid)
+            .collection('location')
+            .doc('currentLocation')
+            .set({
+          'latitude': _currentPosition!.latitude,
+          'longitude': _currentPosition!.longitude
+        }, SetOptions(merge: true));
+      } catch (e) {
+        log(e.toString());
+      }
+    }
   }
 
-  Future<void> _initializePermission() async {
+  Future<void> initializePermission() async {
     bool isDenied = await Permission.notification.isDenied;
     if (isDenied) {
       await Permission.notification.request();
@@ -169,16 +198,27 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              AppbarTrailingImage(
-                imagePath: ImageConstant.imgGroup,
-                margin: EdgeInsets.only(
-                  left: 38.h,
-                  top: 3.v,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ProfileScreen()));
+                },
+                child: AppbarTrailingImage(
+                  imagePath: ImageConstant.imgGroup,
+                  margin: EdgeInsets.only(
+                    left: 38.h,
+                    top: 3.v,
+                  ),
                 ),
               ),
               AppbarTrailingImage(
                 imagePath: ImageConstant.imgGroup5139931,
-                margin: EdgeInsets.only(left: 24.h, right: 46.h),
+                margin: EdgeInsets.only(
+                  left: 24.h,
+                  right: 46.h,
+                ),
               ),
             ],
           )
