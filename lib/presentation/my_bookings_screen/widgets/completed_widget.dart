@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 
 // ignore: must_be_immutable
-class Userprofilelist2ItemWidget extends StatelessWidget {
-  const Userprofilelist2ItemWidget({Key? key})
+class CompletedWidget extends StatelessWidget {
+  const CompletedWidget({Key? key})
       : super(
           key: key,
         );
@@ -40,7 +40,12 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "Shaik Abdullha",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -51,8 +56,8 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                 children: [
                   CustomImageView(
                     imagePath: ImageConstant.imgImage86,
-                    height: 22.v,
-                    width: 24.h,
+                    height: 24.adaptSize,
+                    width: 24.adaptSize,
                   ),
                   Padding(
                     padding: EdgeInsets.only(
@@ -62,7 +67,12 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "AC - AC installation",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -83,7 +93,12 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "22/06/2023",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -104,7 +119,12 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "Morning",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -124,7 +144,12 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "New Delhi - 110001, India",
-                      style: theme.textTheme.bodySmall,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 12.fSize,
+                        fontFamily: 'Open Sans',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -139,12 +164,17 @@ class Userprofilelist2ItemWidget extends StatelessWidget {
               alignment: Alignment.topCenter,
               children: [
                 Align(
-                  alignment: Alignment.bottomRight,
+                  alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 9.h),
+                    padding: EdgeInsets.only(left: 24.h, top: 4.v),
                     child: Text(
                       "Completed",
-                      style: CustomTextStyles.labelLargeInterErrorContainer,
+                      style: TextStyle(
+                        color: appTheme.lightGreenA70001,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),

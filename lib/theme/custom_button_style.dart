@@ -28,6 +28,29 @@ class CustomButtonStyles {
         ),
       );
 
+  static BoxDecoration get gradientPrimaryToGrayTL13Decoration => BoxDecoration(
+        borderRadius: BorderRadius.circular(13.h),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary,
+            spreadRadius: 2.h,
+            blurRadius: 2.h,
+            offset: Offset(
+              0,
+              3,
+            ),
+          ),
+        ],
+        gradient: LinearGradient(
+          begin: Alignment(0.5, 0),
+          end: Alignment(0.5, 1),
+          colors: [
+            theme.colorScheme.primary.withOpacity(1),
+            appTheme.gray900,
+          ],
+        ),
+      );
+
   static BoxDecoration get gradientRedAToRedTL13Decoration => BoxDecoration(
         borderRadius: BorderRadius.circular(13.h),
         boxShadow: [

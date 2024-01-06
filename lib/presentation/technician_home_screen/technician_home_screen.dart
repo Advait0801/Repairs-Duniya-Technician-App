@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -7,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
-import 'package:technician_app/widgets/user_profile_list_item.dart';
+import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilesection_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
@@ -520,7 +519,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           },
           itemCount: 3,
           itemBuilder: (context, index) {
-            return const UserprofilelistItemWidget();
+            return const UserprofilesectionItemWidget();
           },
         ),
       ),

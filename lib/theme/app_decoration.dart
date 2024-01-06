@@ -31,6 +31,15 @@ class AppDecoration {
         ),
       );
 
+  static BoxDecoration get outlineGray500 => BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: appTheme.gray500,
+            width: 1.h,
+          ),
+        ),
+      );
+
   static BoxDecoration get gradientOnErrorToGray => BoxDecoration(
         gradient: LinearGradient(
           begin: const Alignment(0.5, 0),

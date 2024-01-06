@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 
-class UserprofilelistItemWidget extends StatelessWidget {
-  const UserprofilelistItemWidget({Key? key})
+// ignore: must_be_immutable
+class UserprofilesectionItemWidget extends StatelessWidget {
+  const UserprofilesectionItemWidget({Key? key})
       : super(
           key: key,
         );
@@ -39,7 +40,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "Shaik Abdullha",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -61,7 +67,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "AC - AC installation",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -82,7 +93,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "22/06/2023",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -103,7 +119,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "Morning",
-                      style: theme.textTheme.bodyMedium,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -123,7 +144,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     ),
                     child: Text(
                       "New Delhi - 110001, India",
-                      style: CustomTextStyles.bodySmallBluegray700,
+                      style: TextStyle(
+                        color: appTheme.blueGray700,
+                        fontSize: 12.fSize,
+                        fontFamily: 'Open Sans',
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ],
@@ -143,7 +169,12 @@ class UserprofilelistItemWidget extends StatelessWidget {
                     padding: EdgeInsets.only(right: 9.h),
                     child: Text(
                       "Completed",
-                      style: CustomTextStyles.labelLargeInterErrorContainer,
+                      style: TextStyle(
+                        color: theme.colorScheme.errorContainer,
+                        fontSize: 13.740318298339844.fSize,
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),

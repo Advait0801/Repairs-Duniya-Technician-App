@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
-import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
+import 'package:technician_app/presentation/decline_screen/decline_screen.dart';
+import 'package:technician_app/presentation/my_bookings_screen/my_bookings_screen.dart';
+import 'package:technician_app/presentation/pending_screen/my_bookings_one_page.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,21 +27,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeHelper().themeData(),
       title: 'rd_technician_app',
       debugShowCheckedModeBanner: false,
-      home: FutureBuilder<bool>(
-        future: checkLoginStatus(), // Check login status asynchronously
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // Return the appropriate screen based on the login status
-            return snapshot.data == true
-                ? const TechnicianHomeScreen()
-                : const LoginScreen();
-          } else {
-            // Return a loading indicator or splash screen while checking login status
-            return const CircularProgressIndicator();
-          }
-        },
-      ),
-      //home: const ProfileScreen(),
+      // home: FutureBuilder<bool>(
+      //   future: checkLoginStatus(), // Check login status asynchronously
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.done) {
+      //       // Return the appropriate screen based on the login status
+      //       return snapshot.data == true
+      //           ? const TechnicianHomeScreen()
+      //           : const LoginScreen();
+      //     } else {
+      //       // Return a loading indicator or splash screen while checking login status
+      //       return const CircularProgressIndicator();
+      //     }
+      //   },
+      // ),
+      home: const MyBookingsScreen(),
     );
   }
 
