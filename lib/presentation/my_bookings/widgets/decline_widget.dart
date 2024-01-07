@@ -156,7 +156,7 @@ class DeclineWidget extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(
               top: 8.v,
-              bottom: 26.v,
+              bottom: 20.v,
             ),
             child: Column(
               children: [
@@ -169,7 +169,7 @@ class DeclineWidget extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Padding(
-                    padding: EdgeInsets.only(right: 10.h),
+                    padding: EdgeInsets.only(left: 40.h, top: 5.h),
                     child: Text(
                       "Declined",
                       style: TextStyle(

@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
-import 'package:technician_app/presentation/decline_screen/decline_screen.dart';
-import 'package:technician_app/presentation/my_bookings_screen/my_bookings_screen.dart';
-import 'package:technician_app/presentation/pending_screen/my_bookings_one_page.dart';
+import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,7 +39,9 @@ class MyApp extends StatelessWidget {
       //     }
       //   },
       // ),
-      home: const MyBookingsScreen(),
+      home: MyBookingsScreen(
+        id: 'p',
+      ),
     );
   }
 

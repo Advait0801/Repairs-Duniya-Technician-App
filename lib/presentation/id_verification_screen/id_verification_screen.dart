@@ -49,7 +49,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
 
   Future<void> _uploadFiles() async {
     try {
-      const CircularProgressIndicator();
       await _uploadFile(imageIDFrontPath!, 'front');
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');

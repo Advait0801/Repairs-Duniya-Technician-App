@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/my_bookings/end_selfie_screen.dart';
+import 'package:technician_app/presentation/my_bookings/start_selfie_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
-class PendingWidget extends StatelessWidget {
-  const PendingWidget({Key? key})
-      : super(
-          key: key,
-        );
+class PendingWidget extends StatefulWidget {
+  PendingWidget({super.key, required this.id});
+  final String id;
+
+  @override
+  State<PendingWidget> createState() => _PendingWidgetState();
+}
+
+class _PendingWidgetState extends State<PendingWidget> {
+  String screenId = '';
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      screenId = widget.id;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,69 +209,66 @@ class PendingWidget extends StatelessWidget {
             ),
           ),
           SizedBox(height: 14.v),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              CustomElevatedButton(
-                height: 49.v,
-                width: 157.h,
-                text: "Call",
-                buttonStyle: CustomButtonStyles.none,
-                decoration:
-                    CustomButtonStyles.gradientPrimaryToGrayTL13Decoration,
-              ),
-              CustomElevatedButton(
-                height: 49.v,
-                width: 157.h,
-                text: "Start",
-                buttonStyle: CustomButtonStyles.none,
-                decoration: CustomButtonStyles
-                    .gradientLightGreenAToLightGreenADecoration,
-                alignment: Alignment.bottomRight,
-              ),
-            ],
-          ),
-          // SizedBox(
-          //   height: 61.v,
-          //   width: 327.h,
-          //   child: Stack(
-          //     alignment: Alignment.bottomRight,
-          //     children: [
-          //       Align(
-          //         alignment: Alignment.center,
-          //         child: Container(
-          //           margin: EdgeInsets.only(right: 2.h),
-          //           decoration: AppDecoration.outlineGray500,
-          //           child: Column(
-          //             mainAxisSize: MainAxisSize.min,
-          //             crossAxisAlignment: CrossAxisAlignment.start,
-          //             mainAxisAlignment: MainAxisAlignment.end,
-          //             children: [
-          //               SizedBox(height: 12.v),
-          //               CustomElevatedButton(
-          //                 height: 49.v,
-          //                 width: 157.h,
-          //                 text: "Call",
-          //                 buttonStyle: CustomButtonStyles.none,
-          //                 decoration: CustomButtonStyles
-          //                     .gradientPrimaryToGrayTL13Decoration,
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //       CustomElevatedButton(
-          //         height: 49.v,
-          //         width: 157.h,
-          //         text: "Start",
-          //         buttonStyle: CustomButtonStyles.none,
-          //         decoration: CustomButtonStyles
-          //             .gradientLightGreenAToLightGreenADecoration,
-          //         alignment: Alignment.bottomRight,
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          screenId == 'p'
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CustomElevatedButton(
+                      onPressed: () async {
+                        launchUrl(Uri.parse('tel://+918600008456'));
+                      },
+                      height: 49.v,
+                      width: 157.h,
+                      text: "Call",
+                      buttonStyle: CustomButtonStyles.none,
+                      decoration: CustomButtonStyles
+                          .gradientPrimaryToGrayTL13Decoration,
+                    ),
+                    CustomElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          screenId = 's';
+                        });
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const StartSelfieScreen()));
+                      },
+                      height: 49.v,
+                      width: 157.h,
+                      text: "Start",
+                      buttonStyle: CustomButtonStyles.none,
+                      decoration: CustomButtonStyles
+                          .gradientLightGreenAToLightGreenADecoration,
+                      alignment: Alignment.bottomRight,
+                    ),
+                  ],
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      'Started working..',
+                      style: CustomTextStyles.labelLargeInterRed500,
+                    ),
+                    CustomElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EndSelfieScreen()));
+                      },
+                      height: 49.v,
+                      width: 157.h,
+                      text: "Done",
+                      buttonStyle: CustomButtonStyles.none,
+                      decoration: CustomButtonStyles
+                          .gradientLightGreenAToLightGreenADecoration,
+                      alignment: Alignment.bottomRight,
+                    ),
+                  ],
+                ),
           SizedBox(height: 4.v),
         ],
       ),
