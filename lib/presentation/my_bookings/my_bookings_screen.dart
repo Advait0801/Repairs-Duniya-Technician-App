@@ -1,5 +1,6 @@
+// ignore_for_file: unused_field, must_be_immutable
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/widgets/completed_widget.dart';
@@ -9,6 +10,7 @@ import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/half_page.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   MyBookingsScreen({super.key, required this.id});
@@ -22,17 +24,64 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   User? _user;
   String screenId = '';
+  bool showHalfPage = true;
+  static List<PendingWidget> pending = [
+    PendingWidget(id: 'p'),
+    PendingWidget(id: 'p'),
+    PendingWidget(id: 'p'),
+    PendingWidget(id: 'p'),
+  ];
+  static List<CompletedWidget> completed = [
+    const CompletedWidget(),
+    const CompletedWidget(),
+    const CompletedWidget(),
+  ];
+  static List<DeclineWidget> rejected = [
+    const DeclineWidget(),
+    const DeclineWidget(),
+    const DeclineWidget(),
+  ];
 
   @override
   void initState() {
     super.initState();
     setState(() {
       screenId = widget.id;
+      showHalfPage = false;
     });
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
       });
+    });
+  }
+
+  void _showHalfPage(BuildContext context) {
+    Navigator.of(context).push(PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, -1.0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: HalfPage(
+            onClose: () {
+              // Callback function to be invoked when the half page is closed
+              _hideHalfPage(context);
+            },
+          ),
+        );
+      },
+    ));
+  }
+
+  void _hideHalfPage(BuildContext context) {
+    // Use Navigator.pop(context) to remove the topmost route
+    Navigator.pop(context);
+    // Update the state or perform other actions as needed
+    setState(() {
+      showHalfPage = false;
     });
   }
 
@@ -87,6 +136,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.v, vertical: 16.h),
                 child: CustomImageView(
+                  onTap: () {
+                    showHalfPage == true
+                        ? _hideHalfPage(context)
+                        : _showHalfPage(context);
+                  },
                   imagePath: ImageConstant.imgMenu,
                   height: 24.adaptSize,
                   width: 24.adaptSize,
@@ -316,7 +370,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             height: 19.v,
           );
         },
-        itemCount: 5,
+        itemCount: screenId == 'c'
+            ? completed.length
+            : screenId == 'p' || screenId == 's'
+                ? pending.length
+                : rejected.length,
         itemBuilder: (context, index) {
           if (screenId == 'c') {
             return const CompletedWidget();

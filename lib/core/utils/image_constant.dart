@@ -30,7 +30,7 @@ class ImageConstant {
 
   static String bookingIcon = '$imagePath/bookings_icon.png';
 
-  static String contanctIcon = '$imagePath/contacts_icon.png';
+  static String contactIcon = '$imagePath/contacts_icon.png';
 
   // Common images
   static String imgImage91 = '$imagePath/img_image_91.png';

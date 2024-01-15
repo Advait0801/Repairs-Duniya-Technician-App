@@ -12,6 +12,7 @@ import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/half_page.dart';
 
 class TechnicianHomeScreen extends StatefulWidget {
   const TechnicianHomeScreen({super.key});
@@ -26,10 +27,14 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   User? _user;
   LatLng? _currentPosition;
+  bool showHalfPage = false;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      showHalfPage = true;
+    });
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
@@ -110,6 +115,35 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     }
   }
 
+  void _showHalfPage(BuildContext context) {
+    Navigator.of(context).push(PageRouteBuilder(
+      opaque: false,
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, -1.0),
+            end: Offset.zero,
+          ).animate(animation),
+          child: HalfPage(
+            onClose: () {
+              // Callback function to be invoked when the half page is closed
+              _hideHalfPage(context);
+            },
+          ),
+        );
+      },
+    ));
+  }
+
+  void _hideHalfPage(BuildContext context) {
+    // Use Navigator.pop(context) to remove the topmost route
+    Navigator.pop(context);
+    // Update the state or perform other actions as needed
+    setState(() {
+      showHalfPage = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -184,6 +218,11 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 25.v, vertical: 16.h),
                 child: CustomImageView(
+                  onTap: () {
+                    showHalfPage == true
+                        ? _hideHalfPage(context)
+                        : _showHalfPage(context);
+                  },
                   imagePath: ImageConstant.imgMenu,
                   height: 24.adaptSize,
                   width: 24.adaptSize,
