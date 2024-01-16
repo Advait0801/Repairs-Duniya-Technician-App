@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
+import 'package:technician_app/presentation/my_bookings/start_selfie_screen.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilesection_item_widget.dart';
 import 'package:flutter/material.dart';
@@ -269,9 +271,8 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   Widget _buildSubscribeRow(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(right: 7.h),
-      decoration: AppDecoration.gradientOrangeAToOnError.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-      ),
+      decoration: AppDecoration.gradientOrangeAToOnError
+          .copyWith(borderRadius: BorderRadiusStyle.roundedBorder10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -284,9 +285,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                   imagePath: ImageConstant.imgEllipse13,
                   height: 45.adaptSize,
                   width: 45.adaptSize,
-                  radius: BorderRadius.circular(
-                    22.h,
-                  ),
+                  radius: BorderRadius.circular(22.h),
                 ),
                 SizedBox(height: 10.v),
                 SizedBox(
@@ -295,8 +294,11 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                     "To get more works subscribe to our gold plan",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: CustomTextStyles.labelLargeInterGray800.copyWith(
-                      height: 1.17,
+                    style: TextStyle(
+                      color: appTheme.gray80001,
+                      fontSize: 12.fSize,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -306,8 +308,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                   width: 157.h,
                   text: "Subscribe",
                   buttonStyle: CustomButtonStyles.outlinePrimaryTL13,
-                  buttonTextStyle: theme.textTheme.labelLarge!,
-                ),
+                )
               ],
             ),
           ),
@@ -316,7 +317,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             height: 163.adaptSize,
             width: 163.adaptSize,
             margin: EdgeInsets.only(top: 3.v),
-          ),
+          )
         ],
       ),
     );
@@ -513,6 +514,12 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
               children: [
                 Expanded(
                   child: CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyBookingsScreen(id: 'p')));
+                    },
                     height: 49.v,
                     text: "Accept",
                     margin: EdgeInsets.only(right: 6.h),
@@ -524,6 +531,12 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                 ),
                 Expanded(
                   child: CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyBookingsScreen(id: 'r')));
+                    },
                     height: 49.v,
                     text: "Reject",
                     margin: EdgeInsets.only(left: 6.h),

@@ -170,7 +170,7 @@ class UserprofilesectionItemWidget extends StatelessWidget {
                     child: Text(
                       "Completed",
                       style: TextStyle(
-                        color: theme.colorScheme.errorContainer,
+                        color: appTheme.lightGreenA70001,
                         fontSize: 13.740318298339844.fSize,
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w500,

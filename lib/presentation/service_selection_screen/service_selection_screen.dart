@@ -72,43 +72,6 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     }
   }
 
-  void showSheet() {
-    services = [];
-    showModalBottomSheet(
-      isDismissible: false,
-      isScrollControlled: true,
-      context: context,
-      builder: (context) => Column(
-        children: [
-          ListView.builder(
-            itemCount: extraServices.length,
-            itemBuilder: (context, index) => CheckboxListTile(
-              value: true,
-              title: Text(
-                extraServices[index],
-                style: CustomTextStyles.bodyMedium14,
-              ),
-              onChanged: (bool? value) {
-                value = value;
-                setState(() {
-                  services.add(extraServices[index]);
-                });
-              },
-              selectedTileColor: appTheme.gray400,
-            ),
-          ),
-          SizedBox(
-            height: 5.h,
-          ),
-          CustomElevatedButton(
-            text: 'Done',
-            onPressed: () => Navigator.pop(context),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -427,7 +390,6 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                       borderRadius: BorderRadiusStyle.roundedBorder10,
                     ),
                     child: CustomImageView(
-                      onTap: showSheet,
                       imagePath: ImageConstant.imgFrame5140235,
                       height: 9.v,
                       width: 55.h,
