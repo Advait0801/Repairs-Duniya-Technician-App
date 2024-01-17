@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -149,76 +150,97 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     });
   }
 
+  void _showHelloSnackbar() {
+    // Show a Snackbar with the "Hello" message
+    Fluttertoast.showToast(
+      msg: 'Hello',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.blue,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
   Future whenNotificationRecieved(BuildContext context) async {
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage? remoteMessage) {
       if (remoteMessage != Null) {
-        openAppShowAndShowNotification(
-          remoteMessage!.data["phonenumber"],
-          remoteMessage.data["documentName"],
-          remoteMessage.data["user"],
-          context,
-        );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const TechnicianHomeScreen()));
+        _showHelloSnackbar();
       }
     });
-    // for foreground state
+
     FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
       if (remoteMessage != null) {
-        openAppShowAndShowNotification(
-          remoteMessage.data["phonenumber"],
-          remoteMessage.data["documentName"],
-          remoteMessage.data["user"],
-          context,
-        );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const TechnicianHomeScreen()));
+        _showHelloSnackbar();
       }
     });
+
     // for background state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? remoteMessage) {
       if (remoteMessage != null) {
-        openAppShowAndShowNotification(
-          remoteMessage.data["phonenumber"],
-          remoteMessage.data["documentName"],
-          remoteMessage.data["user"],
-          context,
-        );
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const TechnicianHomeScreen()));
+        _showHelloSnackbar();
       }
     });
   }
 
-  openAppShowAndShowNotification(
-      phoneNumber, documentName, user, context) async {
-    await FirebaseFirestore.instance
-        .collection("customers")
-        .doc(user)
-        .collection("serviceDetails")
-        .doc(documentName)
-        .get()
-        .then((snapshot) async {
-      bool job = snapshot.data()!['jobAcceptance'];
-      String phoneNumber = snapshot.data()!['userPhoneNumber'];
-      int time = snapshot.data()!['timeIndex'];
-      DateTime date = snapshot.data()!['timeIndex'];
-      bool urgentBooking = snapshot.data()!['urgentBooking'];
-      String address = snapshot.data()!['address'].toString();
-      //GeoPoint location = snapshot.data()!['userLocation'];
+  // openAppShowAndShowNotification(phoneNumber, documentName, user, context) async {
+  //   print(phoneNumber);
+  //   print(documentName);
+  //   print(user);
 
-      await _firestore
-          .collection('technicians')
-          .doc(_user!.uid)
-          .collection('serviceList')
-          .doc(documentName)
-          .set({
-        'jobAcceptance': job,
-        'timeIndex': time,
-        'date': date,
-        'customerPhone': phoneNumber,
-        'urgentBooking': urgentBooking,
-        'customerAddress': address,
-        'status': 'p',
-      }, SetOptions(merge: true));
-    });
-  }
+  //   bool job = false;
+  //   String phone = '';
+  //   int time = 1;
+  //   DateTime datetime = DateTime.now();
+  //   bool urgentBooking = false;
+  //   String address = '';
+
+  //   await _firestore
+  //       .collection("customers")
+  //       .doc(user)
+  //       .collection("serviceDetails")
+  //       .doc(documentName)
+  //       .get()
+  //       .then((snapshot) {
+  //     job = snapshot.data()!['jobAcceptance'];
+  //     phone = snapshot.data()!['userPhoneNumber'];
+  //     time = snapshot.data()!['timeIndex'];
+  //     datetime = snapshot.data()!['timeIndex'];
+  //     urgentBooking = snapshot.data()!['urgentBooking'];
+  //     address = snapshot.data()!['address'].toString();
+  //     //GeoPoint location = snapshot.data()!['userLocation'];
+  //   });
+
+  //   await _firestore
+  //         .collection('technicians')
+  //         .doc(_user!.uid)
+  //         .collection('serviceList')
+  //         .doc(documentName)
+  //         .set({
+  //       'jobAcceptance': job,
+  //       'timeIndex': time,
+  //       'date': datetime,
+  //       'customerPhone': phone,
+  //       'urgentBooking': urgentBooking,
+  //       'customerAddress': address,
+  //       'status': 'p',
+  //     }, SetOptions(merge: true));
+  // }
 
   Future<void> getEntries() async {
     try {
@@ -229,6 +251,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           .get();
 
       final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      // log(allData.toString());
       for (var dataMap in allData) {
         if (dataMap is Map) {
           // Check if the status is 'p'
@@ -287,7 +310,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                         ),
                         SizedBox(height: 13.v),
                         _buildBookingRow(context),
-                        SizedBox(height: 72.v),
+                        SizedBox(height: 40.v),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
