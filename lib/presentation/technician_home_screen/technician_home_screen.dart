@@ -1,13 +1,13 @@
 import 'dart:developer';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
-import 'package:technician_app/presentation/my_bookings/start_selfie_screen.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/widgets/new_bookings_widget.dart';
 import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilesection_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
@@ -30,6 +30,8 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   User? _user;
   LatLng? _currentPosition;
   bool showHalfPage = false;
+  List<NewBookingWidget> newBookings = [];
+  List<UserprofilesectionItemWidget> recentBookings = [];
 
   @override
   void initState() {
@@ -40,6 +42,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
+        getEntries();
       });
     });
     getCurrentLocation();
@@ -146,6 +149,108 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     });
   }
 
+  Future whenNotificationRecieved(BuildContext context) async {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage? remoteMessage) {
+      if (remoteMessage != Null) {
+        openAppShowAndShowNotification(
+          remoteMessage!.data["phonenumber"],
+          remoteMessage.data["documentName"],
+          remoteMessage.data["user"],
+          context,
+        );
+      }
+    });
+    // for foreground state
+    FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
+      if (remoteMessage != null) {
+        openAppShowAndShowNotification(
+          remoteMessage.data["phonenumber"],
+          remoteMessage.data["documentName"],
+          remoteMessage.data["user"],
+          context,
+        );
+      }
+    });
+    // for background state
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? remoteMessage) {
+      if (remoteMessage != null) {
+        openAppShowAndShowNotification(
+          remoteMessage.data["phonenumber"],
+          remoteMessage.data["documentName"],
+          remoteMessage.data["user"],
+          context,
+        );
+      }
+    });
+  }
+
+  openAppShowAndShowNotification(
+      phoneNumber, documentName, user, context) async {
+    await FirebaseFirestore.instance
+        .collection("customers")
+        .doc(user)
+        .collection("serviceDetails")
+        .doc(documentName)
+        .get()
+        .then((snapshot) async {
+      bool job = snapshot.data()!['jobAcceptance'];
+      String phoneNumber = snapshot.data()!['userPhoneNumber'];
+      int time = snapshot.data()!['timeIndex'];
+      DateTime date = snapshot.data()!['timeIndex'];
+      bool urgentBooking = snapshot.data()!['urgentBooking'];
+      String address = snapshot.data()!['address'].toString();
+      //GeoPoint location = snapshot.data()!['userLocation'];
+
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(documentName)
+          .set({
+        'jobAcceptance': job,
+        'timeIndex': time,
+        'date': date,
+        'customerPhone': phoneNumber,
+        'urgentBooking': urgentBooking,
+        'customerAddress': address,
+        'status': 'p',
+      }, SetOptions(merge: true));
+    });
+  }
+
+  Future<void> getEntries() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .get();
+
+      final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      for (var dataMap in allData) {
+        if (dataMap is Map) {
+          // Check if the status is 'p'
+          if (dataMap['status'] == 'p') {
+            Timestamp timeStamp = dataMap['date'];
+            DateTime datetime = timeStamp.toDate();
+            String date = '${datetime.day}/${datetime.month}/${datetime.year}';
+            newBookings.add(
+              NewBookingWidget(
+                phoneNumber: dataMap['customerPhone'],
+                address: dataMap['customerAddress'],
+                day: date,
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      log("Error fetching data: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -181,7 +286,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                           ),
                         ),
                         SizedBox(height: 13.v),
-                        _buildBookingColumn(context),
+                        _buildBookingRow(context),
                         SizedBox(height: 72.v),
                         Align(
                           alignment: Alignment.centerLeft,
@@ -203,6 +308,26 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBookingRow(BuildContext context) {
+    return CarouselSlider.builder(
+      itemCount: newBookings.length,
+      itemBuilder: (context, index, realIndex) {
+        return NewBookingWidget(
+          address: newBookings[index].address,
+          day: newBookings[index].day,
+          phoneNumber: newBookings[index].phoneNumber,
+        );
+      },
+      options: CarouselOptions(
+        viewportFraction: 1,
+        aspectRatio: 16 / 11,
+        autoPlay: true,
+        enableInfiniteScroll: false,
+        autoPlayInterval: const Duration(seconds: 3),
       ),
     );
   }
@@ -318,236 +443,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             width: 163.adaptSize,
             margin: EdgeInsets.only(top: 3.v),
           )
-        ],
-      ),
-    );
-  }
-
-  /// Section Widget
-  Widget _buildBookingColumn(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 9.h),
-      padding: EdgeInsets.all(20.h),
-      decoration: AppDecoration.gradientOnErrorToBlueGray.copyWith(
-        borderRadius: BorderRadiusStyle.roundedBorder10,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(right: 6.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgGroupOnprimary,
-                          height: 24.adaptSize,
-                          width: 24.adaptSize,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 13.h,
-                            top: 2.v,
-                            bottom: 4.v,
-                          ),
-                          child: Text(
-                            "Shaik Abdullha",
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12.v),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgImage86,
-                          height: 22.v,
-                          width: 24.h,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 13.h,
-                            top: 2.v,
-                            bottom: 3.v,
-                          ),
-                          child: Text(
-                            "AC - AC installation",
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12.v),
-                    Row(
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgImage87,
-                          height: 24.adaptSize,
-                          width: 24.adaptSize,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 13.h,
-                            top: 3.v,
-                            bottom: 3.v,
-                          ),
-                          child: Text(
-                            "22/06/2023",
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12.v),
-                    Row(
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgImage88,
-                          height: 24.adaptSize,
-                          width: 24.adaptSize,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 13.h,
-                            top: 4.v,
-                            bottom: 2.v,
-                          ),
-                          child: Text(
-                            "Morning",
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 12.v),
-                    Row(
-                      children: [
-                        CustomImageView(
-                          imagePath: ImageConstant.imgVector,
-                          height: 22.v,
-                          width: 21.h,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: 12.h,
-                            top: 4.v,
-                          ),
-                          child: Text(
-                            "New Delhi - 110001, India",
-                            style: CustomTextStyles.bodySmallBluegray700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 20.v),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20.h,
-                    vertical: 19.v,
-                  ),
-                  decoration: AppDecoration.fillRed.copyWith(
-                    borderRadius: BorderRadiusStyle.roundedBorder57,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 64.h,
-                        child: Text(
-                          "Accept Booking within",
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.center,
-                          style: CustomTextStyles.bodySmallInterBluegray700
-                              .copyWith(
-                            height: 1.70,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 3.v),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "03:00",
-                              style: theme.textTheme.titleLarge,
-                            ),
-                            TextSpan(
-                              text: "min",
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      SizedBox(height: 11.v),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Get Bonus of 100/-",
-                          style: CustomTextStyles.bodySmallInterBluegray700,
-                        ),
-                      ),
-                      SizedBox(height: 3.v),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 32.v),
-          Padding(
-            padding: EdgeInsets.only(right: 8.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: CustomElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyBookingsScreen(id: 'p')));
-                    },
-                    height: 49.v,
-                    text: "Accept",
-                    margin: EdgeInsets.only(right: 6.h),
-                    buttonStyle: CustomButtonStyles.none,
-                    decoration: CustomButtonStyles
-                        .gradientLightGreenAToOnPrimaryContainerDecoration,
-                    buttonTextStyle: theme.textTheme.labelLarge!,
-                  ),
-                ),
-                Expanded(
-                  child: CustomElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyBookingsScreen(id: 'r')));
-                    },
-                    height: 49.v,
-                    text: "Reject",
-                    margin: EdgeInsets.only(left: 6.h),
-                    buttonStyle: CustomButtonStyles.none,
-                    decoration: CustomButtonStyles.gradientRedAToRedDecoration,
-                    buttonTextStyle: theme.textTheme.labelLarge!,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

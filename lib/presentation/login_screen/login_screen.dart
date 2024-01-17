@@ -2,7 +2,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/otp_screen/otp_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -112,7 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 MaterialStatePropertyAll(Colors.black))
                         : const ButtonStyle(),
                     onPressed: () async {
-                      var signatureId = await SmsAutoFill().getAppSignature;
                       await _auth.verifyPhoneNumber(
                         phoneNumber: '+91${phoneNumberController.text}',
                         verificationCompleted:

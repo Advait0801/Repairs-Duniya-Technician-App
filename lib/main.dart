@@ -23,24 +23,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeHelper().themeData(),
-        title: 'rd_technician_app',
-        debugShowCheckedModeBanner: false,
-        // home: FutureBuilder<bool>(
-        //   future: checkLoginStatus(), // Check login status asynchronously
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.done) {
-        //       // Return the appropriate screen based on the login status
-        //       return snapshot.data == true
-        //           ? const TechnicianHomeScreen()
-        //           : const LoginScreen();
-        //     } else {
-        //       // Return a loading indicator or splash screen while checking login status
-        //       return const CircularProgressIndicator();
-        //     }
-        //   },
-        // ),
-        home: const TechnicianHomeScreen());
+      theme: ThemeHelper().themeData(),
+      title: 'rd_technician_app',
+      debugShowCheckedModeBanner: false,
+      home: FutureBuilder<bool>(
+        future: checkLoginStatus(), // Check login status asynchronously
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // Return the appropriate screen based on the login status
+            return snapshot.data == true
+                ? const TechnicianHomeScreen()
+                : const LoginScreen();
+          } else {
+            // Return a loading indicator or splash screen while checking login status
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
+    );
+    //   home: const TechnicianHomeScreen());
   }
 
   Future<bool> checkLoginStatus() async {

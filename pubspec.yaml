@@ -53,9 +53,9 @@ dependencies:
   geocoding: ^2.1.1
   http: ^0.13.6
   uuid: ^4.2.2
-  sms_autofill: ^2.3.0
   permission_handler: ^11.0.1
   url_launcher: ^6.2.2
+  carousel_slider: ^4.2.1
 
 dev_dependencies:
   flutter_test:

@@ -3,10 +3,9 @@ import 'package:technician_app/core/app_export.dart';
 
 // ignore: must_be_immutable
 class UserprofilesectionItemWidget extends StatelessWidget {
-  const UserprofilesectionItemWidget({Key? key})
-      : super(
-          key: key,
-        );
+  const UserprofilesectionItemWidget({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
