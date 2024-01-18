@@ -12,7 +12,8 @@ import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart'
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class StartSelfieScreen extends StatefulWidget {
-  const StartSelfieScreen({super.key});
+  const StartSelfieScreen({super.key, required this.docName});
+  final String docName;
 
   @override
   State<StartSelfieScreen> createState() => _StartSelfieScreenState();
@@ -39,19 +40,27 @@ class _StartSelfieScreenState extends State<StartSelfieScreen> {
     try {
       File pickedFile = path;
 
-      final Reference storageReference = _storage.ref().child(
-          'uploads/${_user!.uid}/${DateTime.now().millisecondsSinceEpoch}_startingSelfie');
+      final Reference storageReference = _storage
+          .ref()
+          .child('uploads/${_user!.uid}/${widget.docName}_startingSelfie');
       final TaskSnapshot snapshot = await storageReference.putFile(pickedFile);
       String downloadUrl = await snapshot.ref.getDownloadURL();
 
       await _firestore
           .collection('technicians')
           .doc(_user!.uid)
-          .collection('serviceId')
-          .add({
-        'fileName': 'startingSelfie',
-        'filePath': downloadUrl,
-      });
+          .collection('serviceList')
+          .doc(widget.docName)
+          .set({
+        'startingSelfie': downloadUrl,
+      }, SetOptions(merge: true));
+
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(widget.docName)
+          .update({'status': 's'});
     } catch (e) {
       log(e.toString());
     }

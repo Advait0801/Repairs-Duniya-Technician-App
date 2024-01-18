@@ -7,8 +7,18 @@ import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class PendingWidget extends StatefulWidget {
-  PendingWidget({super.key, required this.id});
+  const PendingWidget(
+      {super.key,
+      required this.id,
+      required this.phone,
+      required this.address,
+      required this.date,
+      required this.docName});
   final String id;
+  final String phone;
+  final String address;
+  final String date;
+  final String docName;
 
   @override
   State<PendingWidget> createState() => _PendingWidgetState();
@@ -62,7 +72,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                             bottom: 4.v,
                           ),
                           child: Text(
-                            "Shaik Abdullha",
+                            widget.phone,
                             style: TextStyle(
                               color: appTheme.blueGray700,
                               fontSize: 13.740318298339844.fSize,
@@ -114,7 +124,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                             bottom: 3.v,
                           ),
                           child: Text(
-                            "22/06/2023",
+                            widget.date,
                             style: TextStyle(
                               color: appTheme.blueGray700,
                               fontSize: 13.740318298339844.fSize,
@@ -165,7 +175,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                             top: 4.v,
                           ),
                           child: Text(
-                            "New Delhi - 110001, India",
+                            widget.address,
                             style: TextStyle(
                               color: appTheme.blueGray700,
                               fontSize: 12.fSize,
@@ -232,8 +242,8 @@ class _PendingWidgetState extends State<PendingWidget> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    const StartSelfieScreen()));
+                                builder: (context) => StartSelfieScreen(
+                                    docName: widget.docName)));
                       },
                       height: 49.v,
                       width: 157.h,

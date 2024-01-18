@@ -3,10 +3,14 @@ import 'package:technician_app/core/app_export.dart';
 
 // ignore: must_be_immutable
 class DeclineWidget extends StatelessWidget {
-  const DeclineWidget({Key? key})
-      : super(
-          key: key,
-        );
+  const DeclineWidget(
+      {super.key,
+      required this.phone,
+      required this.address,
+      required this.date});
+  final String phone;
+  final String address;
+  final String date;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +41,7 @@ class DeclineWidget extends StatelessWidget {
                       bottom: 4.v,
                     ),
                     child: Text(
-                      "Shaik Abdullha",
+                      phone,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
@@ -89,7 +93,7 @@ class DeclineWidget extends StatelessWidget {
                       bottom: 3.v,
                     ),
                     child: Text(
-                      "22/06/2023",
+                      date,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
@@ -140,7 +144,7 @@ class DeclineWidget extends StatelessWidget {
                       top: 4.v,
                     ),
                     child: Text(
-                      "New Delhi - 110001, India",
+                      address,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 12.fSize,

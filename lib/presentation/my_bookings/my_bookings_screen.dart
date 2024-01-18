@@ -1,5 +1,8 @@
 // ignore_for_file: unused_field, must_be_immutable
 
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
@@ -22,25 +25,13 @@ class MyBookingsScreen extends StatefulWidget {
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
   String screenId = '';
   bool showHalfPage = true;
-  static List<PendingWidget> pending = [
-    PendingWidget(id: 'p'),
-    PendingWidget(id: 'p'),
-    PendingWidget(id: 'p'),
-    PendingWidget(id: 'p'),
-  ];
-  static List<CompletedWidget> completed = [
-    const CompletedWidget(),
-    const CompletedWidget(),
-    const CompletedWidget(),
-  ];
-  static List<DeclineWidget> rejected = [
-    const DeclineWidget(),
-    const DeclineWidget(),
-    const DeclineWidget(),
-  ];
+  List<CompletedWidget> completed = [];
+  List<PendingWidget> pending = [];
+  List<DeclineWidget> rejected = [];
 
   @override
   void initState() {
@@ -52,8 +43,64 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
+        getEntries();
       });
     });
+  }
+
+  Future<void> getEntries() async {
+    try {
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .get();
+
+      String documentName = '';
+      final allData = querySnapshot.docs.map((doc) {
+        documentName = doc.id;
+        Map<String, dynamic> documentData = doc.data() as Map<String, dynamic>;
+        return documentData; // or any other processing you need
+      }).toList();
+
+      for (var dataMap in allData) {
+        if (dataMap is Map) {
+          // Check if the status is 'p'
+          if (dataMap['status'] == 'p' || dataMap['status'] == 's') {
+            Timestamp timeStamp = dataMap['date'];
+            DateTime datetime = timeStamp.toDate();
+            String date = '${datetime.day}/${datetime.month}/${datetime.year}';
+            pending.add(PendingWidget(
+              docName: documentName,
+              id: dataMap['status'],
+              phone: dataMap['customerPhone'],
+              address: dataMap['customerAddress'],
+              date: date,
+            ));
+          } else if (dataMap['status'] == 'c') {
+            Timestamp timestamp = dataMap['date'];
+            DateTime dateTime = timestamp.toDate();
+            String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+            completed.add(CompletedWidget(
+              phone: dataMap['customerPhone'],
+              address: dataMap['customerAddress'],
+              date: date,
+            ));
+          } else if (dataMap['status'] == 'r') {
+            Timestamp timestamp = dataMap['date'];
+            DateTime dateTime = timestamp.toDate();
+            String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+            rejected.add(DeclineWidget(
+              phone: dataMap['customerPhone'],
+              address: dataMap['customerAddress'],
+              date: date,
+            ));
+          }
+        }
+      }
+    } catch (e) {
+      log("Error fetching data: $e");
+    }
   }
 
   void _showHalfPage(BuildContext context) {
@@ -377,15 +424,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 : rejected.length,
         itemBuilder: (context, index) {
           if (screenId == 'c') {
-            return const CompletedWidget();
-          } else if (screenId == 'p') {
-            return PendingWidget(
-              id: 'p',
-            );
-          } else if (screenId == 's') {
-            return PendingWidget(id: 's');
+            return completed[index];
+          } else if (screenId == 'p' || screenId == 's') {
+            return pending[index];
           } else {
-            return const DeclineWidget();
+            return rejected[index];
           }
         },
       ),
