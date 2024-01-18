@@ -7,6 +7,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:technician_app/presentation/my_bookings/widgets/completed_widget.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/widgets/new_bookings_widget.dart';
 import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilesection_item_widget.dart';
@@ -251,7 +252,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           .get();
 
       final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-      // log(allData.toString());
       for (var dataMap in allData) {
         if (dataMap is Map) {
           // Check if the status is 'p'
@@ -266,6 +266,15 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                 day: date,
               ),
             );
+          } else if (dataMap['status'] == 'c') {
+            Timestamp timestamp = dataMap['date'];
+            DateTime dateTime = timestamp.toDate();
+            String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+            recentBookings.add(UserprofilesectionItemWidget(
+              phone: dataMap['customerPhone'],
+              address: dataMap['customerAddress'],
+              date: date,
+            ));
           }
         }
       }
@@ -487,9 +496,13 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
               height: 16.v,
             );
           },
-          itemCount: 3,
+          itemCount: recentBookings.length,
           itemBuilder: (context, index) {
-            return const UserprofilesectionItemWidget();
+            return UserprofilesectionItemWidget(
+              phone: recentBookings[index].phone,
+              address: recentBookings[index].address,
+              date: recentBookings[index].date,
+            );
           },
         ),
       ),
