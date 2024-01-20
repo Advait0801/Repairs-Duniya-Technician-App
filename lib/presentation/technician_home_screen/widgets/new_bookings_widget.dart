@@ -1,22 +1,60 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
-class NewBookingWidget extends StatelessWidget {
+class NewBookingWidget extends StatefulWidget {
   final String phoneNumber;
   final String address;
   final String day;
+  final String docName;
 
   const NewBookingWidget(
       {super.key,
+      required this.docName,
       required this.address,
       required this.day,
       required this.phoneNumber});
 
   @override
+  State<NewBookingWidget> createState() => _NewBookingWidgetState();
+}
+
+class _NewBookingWidgetState extends State<NewBookingWidget> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _auth.authStateChanges().listen((User? user) {
+      setState(() {
+        _user = user;
+      });
+    });
+  }
+
+  Future<void> setStatus(String status) async {
+    try {
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(widget.docName)
+          .update({'status': status});
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String date = day.toString();
+    final String date = widget.day.toString();
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 9.h),
       padding: EdgeInsets.all(20.h),
@@ -49,7 +87,7 @@ class NewBookingWidget extends StatelessWidget {
                             bottom: 4.v,
                           ),
                           child: Text(
-                            phoneNumber,
+                            widget.phoneNumber,
                             style: theme.textTheme.bodyMedium,
                           ),
                         ),
@@ -133,7 +171,7 @@ class NewBookingWidget extends StatelessWidget {
                             top: 4.v,
                           ),
                           child: Text(
-                            address,
+                            widget.address,
                             style: CustomTextStyles.bodySmallBluegray700,
                           ),
                         ),
@@ -207,6 +245,7 @@ class NewBookingWidget extends StatelessWidget {
                 Expanded(
                   child: CustomElevatedButton(
                     onPressed: () {
+                      setStatus('p');
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -224,6 +263,7 @@ class NewBookingWidget extends StatelessWidget {
                 Expanded(
                   child: CustomElevatedButton(
                     onPressed: () {
+                      setStatus('r');
                       Navigator.push(
                           context,
                           MaterialPageRoute(

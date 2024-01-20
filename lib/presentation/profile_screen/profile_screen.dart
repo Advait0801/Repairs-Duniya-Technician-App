@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
@@ -12,7 +11,6 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
 
   @override
@@ -38,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           backgroundColor: Colors.black,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             color: Colors.white,
             iconSize: MediaQuery.of(context).size.width * 0.08,
             onPressed: () {

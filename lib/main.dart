@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
-    //   home: const TechnicianHomeScreen());
+    //home: MyBookingsScreen(id: 'p'));
   }
 
   Future<bool> checkLoginStatus() async {

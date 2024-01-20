@@ -51,9 +51,7 @@ class _StartSelfieScreenState extends State<StartSelfieScreen> {
           .doc(_user!.uid)
           .collection('serviceList')
           .doc(widget.docName)
-          .set({
-        'startingSelfie': downloadUrl,
-      }, SetOptions(merge: true));
+          .set({'startingSelfie': downloadUrl}, SetOptions(merge: true));
 
       await _firestore
           .collection('technicians')
@@ -61,11 +59,12 @@ class _StartSelfieScreenState extends State<StartSelfieScreen> {
           .collection('serviceList')
           .doc(widget.docName)
           .update({'status': 's'});
+
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 's')));
     } catch (e) {
       log(e.toString());
     }
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 's')));
   }
 
   @override

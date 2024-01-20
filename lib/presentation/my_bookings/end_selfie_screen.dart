@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,11 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
-import 'package:technician_app/presentation/my_bookings/widgets/pending_widget.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class EndSelfieScreen extends StatefulWidget {
-  const EndSelfieScreen({super.key});
+  const EndSelfieScreen({super.key, required this.docName});
+  final String docName;
 
   @override
   State<EndSelfieScreen> createState() => _EndSelfieScreenState();
@@ -38,36 +37,33 @@ class _EndSelfieScreenState extends State<EndSelfieScreen> {
   }
 
   Future<void> _uploadFile(File path) async {
-    flag = true;
-    while (flag) {
-      const CircularProgressIndicator();
-      try {
-        File pickedFile = path;
+    try {
+      File pickedFile = path;
 
-        final Reference storageReference = _storage.ref().child(
-            'uploads/${_user!.uid}/${DateTime.now().millisecondsSinceEpoch}_endingSelfie');
-        final TaskSnapshot snapshot =
-            await storageReference.putFile(pickedFile);
-        String downloadUrl = await snapshot.ref.getDownloadURL();
+      final Reference storageReference = _storage.ref().child(
+          'uploads/${_user!.uid}/${DateTime.now().millisecondsSinceEpoch}_endingSelfie');
+      final TaskSnapshot snapshot = await storageReference.putFile(pickedFile);
+      String downloadUrl = await snapshot.ref.getDownloadURL();
 
-        await _firestore
-            .collection('technicians')
-            .doc(_user!.uid)
-            .collection('serviceId')
-            .add({
-          'fileName': 'endingSelfie',
-          'filePath': downloadUrl,
-        });
-        setState(() {
-          flag = false;
-        });
-      } catch (e) {
-        log(e.toString());
-      }
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(widget.docName)
+          .set({'endingSelfie': downloadUrl}, SetOptions(merge: true));
+
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(widget.docName)
+          .update({'status': 'c'});
+
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 'c')));
+    } catch (e) {
+      log(e.toString());
     }
-
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 'c')));
   }
 
   @override

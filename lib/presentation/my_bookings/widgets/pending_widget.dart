@@ -7,13 +7,15 @@ import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class PendingWidget extends StatefulWidget {
-  const PendingWidget(
-      {super.key,
-      required this.id,
-      required this.phone,
-      required this.address,
-      required this.date,
-      required this.docName});
+  const PendingWidget({
+    super.key,
+    required this.docName,
+    required this.id,
+    required this.phone,
+    required this.address,
+    required this.date,
+  });
+
   final String id;
   final String phone;
   final String address;
@@ -25,15 +27,6 @@ class PendingWidget extends StatefulWidget {
 }
 
 class _PendingWidgetState extends State<PendingWidget> {
-  String screenId = '';
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      screenId = widget.id;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -219,13 +212,13 @@ class _PendingWidgetState extends State<PendingWidget> {
             ),
           ),
           SizedBox(height: 14.v),
-          screenId == 'p'
+          widget.id == 'p'
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     CustomElevatedButton(
                       onPressed: () async {
-                        launchUrl(Uri.parse('tel://+918600008456'));
+                        launchUrl(Uri.parse('tel://${widget.phone}'));
                       },
                       height: 49.v,
                       width: 157.h,
@@ -236,14 +229,12 @@ class _PendingWidgetState extends State<PendingWidget> {
                     ),
                     CustomElevatedButton(
                       onPressed: () {
-                        setState(() {
-                          screenId = 's';
-                        });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => StartSelfieScreen(
-                                    docName: widget.docName)));
+                                      docName: widget.docName,
+                                    )));
                       },
                       height: 49.v,
                       width: 157.h,
@@ -267,7 +258,9 @@ class _PendingWidgetState extends State<PendingWidget> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const EndSelfieScreen()));
+                                builder: (context) => EndSelfieScreen(
+                                      docName: widget.docName,
+                                    )));
                       },
                       height: 49.v,
                       width: 157.h,

@@ -56,48 +56,50 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           .collection('serviceList')
           .get();
 
-      String documentName = '';
-      final allData = querySnapshot.docs.map((doc) {
-        documentName = doc.id;
-        Map<String, dynamic> documentData = doc.data() as Map<String, dynamic>;
-        return documentData; // or any other processing you need
-      }).toList();
-
-      for (var dataMap in allData) {
-        if (dataMap is Map) {
-          // Check if the status is 'p'
-          if (dataMap['status'] == 'p' || dataMap['status'] == 's') {
-            Timestamp timeStamp = dataMap['date'];
+      if (querySnapshot.docs.isNotEmpty) {
+        for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
+          String docId = documentSnapshot.id;
+          if (documentSnapshot['status'] == 'p' ||
+              documentSnapshot['status'] == 's') {
+            Timestamp timeStamp = documentSnapshot['date'];
             DateTime datetime = timeStamp.toDate();
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
-            pending.add(PendingWidget(
-              docName: documentName,
-              id: dataMap['status'],
-              phone: dataMap['customerPhone'],
-              address: dataMap['customerAddress'],
-              date: date,
-            ));
-          } else if (dataMap['status'] == 'c') {
-            Timestamp timestamp = dataMap['date'];
+            pending.add(
+              PendingWidget(
+                id: documentSnapshot['status'],
+                docName: docId,
+                phone: documentSnapshot['customerPhone'],
+                address: documentSnapshot['customerAddress'],
+                date: date,
+              ),
+            );
+          } else if (documentSnapshot['status'] == 'c') {
+            Timestamp timestamp = documentSnapshot['date'];
             DateTime dateTime = timestamp.toDate();
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-            completed.add(CompletedWidget(
-              phone: dataMap['customerPhone'],
-              address: dataMap['customerAddress'],
-              date: date,
-            ));
-          } else if (dataMap['status'] == 'r') {
-            Timestamp timestamp = dataMap['date'];
+            completed.add(
+              CompletedWidget(
+                phone: documentSnapshot['customerPhone'],
+                address: documentSnapshot['customerAddress'],
+                date: date,
+              ),
+            );
+          } else if (documentSnapshot['status'] == 'r') {
+            Timestamp timestamp = documentSnapshot['date'];
             DateTime dateTime = timestamp.toDate();
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-            rejected.add(DeclineWidget(
-              phone: dataMap['customerPhone'],
-              address: dataMap['customerAddress'],
-              date: date,
-            ));
+            rejected.add(
+              DeclineWidget(
+                phone: documentSnapshot['customerPhone'],
+                address: documentSnapshot['customerAddress'],
+                date: date,
+              ),
+            );
           }
         }
       }
+
+      pending.sort((a, b) => b.id.compareTo(a.id));
     } catch (e) {
       log("Error fetching data: $e");
     }
@@ -406,6 +408,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   }
 
   Widget _buildUsersList(BuildContext context) {
+    log(completed.length.toString());
+    log(rejected.length.toString());
+    log(pending.length.toString());
     return Expanded(
         child: Padding(
       padding: EdgeInsets.only(left: 10.h, right: 7.h),
@@ -424,11 +429,25 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 : rejected.length,
         itemBuilder: (context, index) {
           if (screenId == 'c') {
-            return completed[index];
+            return CompletedWidget(
+              phone: completed[index].phone,
+              address: completed[index].address,
+              date: completed[index].date,
+            );
           } else if (screenId == 'p' || screenId == 's') {
-            return pending[index];
+            return PendingWidget(
+              docName: pending[index].docName,
+              id: screenId,
+              phone: pending[index].phone,
+              address: pending[index].address,
+              date: pending[index].date,
+            );
           } else {
-            return rejected[index];
+            return DeclineWidget(
+              phone: rejected[index].phone,
+              address: rejected[index].address,
+              date: rejected[index].date,
+            );
           }
         },
       ),
