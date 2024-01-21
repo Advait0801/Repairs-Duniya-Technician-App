@@ -6,18 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class NewBookingWidget extends StatefulWidget {
+  //final String customerId;
   final String phoneNumber;
   final String address;
   final String day;
   final String docName;
+  final String timing;
 
   const NewBookingWidget(
       {super.key,
+      // required this.customerId,
       required this.docName,
       required this.address,
       required this.day,
+      required this.timing,
       required this.phoneNumber});
 
   @override
@@ -31,6 +37,9 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
   static const time = Duration(minutes: 3);
   Duration duration = const Duration();
   Timer? timer;
+  Duration currentTime = time;
+  String customerId = '';
+  String customerTokenId = '';
 
   @override
   void initState() {
@@ -46,7 +55,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
 
   void reset() {
     setState(() {
-      duration = time;
+      duration = currentTime;
     });
   }
 
@@ -177,7 +186,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
                             bottom: 2.v,
                           ),
                           child: Text(
-                            "Morning",
+                            widget.timing,
                             style: theme.textTheme.bodyMedium,
                           ),
                         ),
@@ -257,6 +266,8 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
                 Expanded(
                   child: CustomElevatedButton(
                     onPressed: () {
+                      //fetchDetails();
+                      notificationFormat(_user!.uid);
                       setStatus('p');
                       Navigator.push(
                           context,
@@ -295,6 +306,89 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
         ],
       ),
     );
+  }
+
+  Future<void> fetchDetails() async {
+    try {
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('serviceList')
+          .doc(widget.docName)
+          .get()
+          .then((snapshot) {
+        setState(() {
+          customerId = snapshot.data()!['customerId'];
+          customerTokenId = snapshot.data()!['customerTokenId'];
+          log(customerTokenId);
+        });
+      });
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  notificationFormat(technicianId) async {
+    await _firestore
+        .collection('technicians')
+        .doc(_user!.uid)
+        .collection('serviceList')
+        .doc(widget.docName)
+        .get()
+        .then((snapshot) {
+      setState(() {
+        customerId = snapshot.data()!['customerId'];
+        customerTokenId = snapshot.data()!['customerTokenId'];
+        log(customerTokenId);
+      });
+    });
+
+    log("Building notification format...");
+    log("dvnkjsnvkdnvkdnvkds");
+
+    Map<String, String> headerNotification = {
+      "Content-Type": "application/json",
+      "Authorization":
+          "key=AAAA0PM0nhk:APA91bEEQmPk1eVc7fRsFUrI5ziYm-zWCi_5BrO88PDz5A48YUU96Iwrp0fIBJ6CV6HGXsn13yOFzvKxb0Fnk2VZyK7g1cPXBm1KimmoP_028MLNiSKsULtk2h9P1QU2kNIxmSBV2h1L",
+    };
+
+    Map bodyNotification = {
+      "body":
+          "Your service request has been successfully accepted by ${_user!.phoneNumber}",
+      "title": "Technician Assigned",
+    };
+
+    Map dataMap = {
+      "click_action": "FLUTTER_NOTIFICATION_CLICK",
+      "id": "1",
+      "status": "done",
+      "phonenumber": _user!.phoneNumber,
+      "user": _user!.uid,
+    };
+
+    Map notificationFormat = {
+      "notification": bodyNotification,
+      "data": dataMap,
+      "priority": "high",
+      "to": customerTokenId,
+    };
+
+    log("Sending notification to customer $customerId...");
+    try {
+      final response = await http.post(
+        Uri.parse("https://fcm.googleapis.com/fcm/send"),
+        headers: headerNotification,
+        body: jsonEncode(notificationFormat),
+      );
+
+      if (response.statusCode == 200) {
+        log("Notification sent successfully to technician $customerId.");
+      } else {
+        log("Failed to send notification to technician $technicianId. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      log("Error while sending notification to technician $technicianId: $e");
+    }
   }
 
   _buildTimer(BuildContext context) {

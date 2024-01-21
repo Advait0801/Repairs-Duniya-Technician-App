@@ -1,9 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -153,98 +154,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     });
   }
 
-  // void _showHelloSnackbar() {
-  //   // Show a Snackbar with the "Hello" message
-  //   Fluttertoast.showToast(
-  //     msg: 'Hello',
-  //     toastLength: Toast.LENGTH_SHORT,
-  //     gravity: ToastGravity.BOTTOM,
-  //     timeInSecForIosWeb: 1,
-  //     backgroundColor: Colors.blue,
-  //     textColor: Colors.white,
-  //     fontSize: 16.0,
-  //   );
-  // }
-
-  // Future whenNotificationRecieved(BuildContext context) async {
-  //   FirebaseMessaging.instance
-  //       .getInitialMessage()
-  //       .then((RemoteMessage? remoteMessage) {
-  //     if (remoteMessage != Null) {
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (context) => const TechnicianHomeScreen()));
-  //       _showHelloSnackbar();
-  //     }
-  //   });
-
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
-  //     if (remoteMessage != null) {
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (context) => const TechnicianHomeScreen()));
-  //       _showHelloSnackbar();
-  //     }
-  //   });
-
-  //   // for background state
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage? remoteMessage) {
-  //     if (remoteMessage != null) {
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (context) => const TechnicianHomeScreen()));
-  //       _showHelloSnackbar();
-  //     }
-  //   });
-  // }
-
-  // // openAppShowAndShowNotification(phoneNumber, documentName, user, context) async {
-  // //   print(phoneNumber);
-  // //   print(documentName);
-  // //   print(user);
-
-  // //   bool job = false;
-  // //   String phone = '';
-  // //   int time = 1;
-  // //   DateTime datetime = DateTime.now();
-  // //   bool urgentBooking = false;
-  // //   String address = '';
-
-  // //   await _firestore
-  // //       .collection("customers")
-  // //       .doc(user)
-  // //       .collection("serviceDetails")
-  // //       .doc(documentName)
-  // //       .get()
-  // //       .then((snapshot) {
-  // //     job = snapshot.data()!['jobAcceptance'];
-  // //     phone = snapshot.data()!['userPhoneNumber'];
-  // //     time = snapshot.data()!['timeIndex'];
-  // //     datetime = snapshot.data()!['timeIndex'];
-  // //     urgentBooking = snapshot.data()!['urgentBooking'];
-  // //     address = snapshot.data()!['address'].toString();
-  // //     //GeoPoint location = snapshot.data()!['userLocation'];
-  // //   });
-
-  // //   await _firestore
-  // //         .collection('technicians')
-  // //         .doc(_user!.uid)
-  // //         .collection('serviceList')
-  // //         .doc(documentName)
-  // //         .set({
-  // //       'jobAcceptance': job,
-  // //       'timeIndex': time,
-  // //       'date': datetime,
-  // //       'customerPhone': phone,
-  // //       'urgentBooking': urgentBooking,
-  // //       'customerAddress': address,
-  // //       'status': 'p',
-  // //     }, SetOptions(merge: true));
-  // // }
-
   Future<void> getEntries() async {
     try {
       QuerySnapshot querySnapshot = await _firestore
@@ -262,7 +171,9 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             newBookings.add(
               NewBookingWidget(
+                //customerId: customerTokenId!,
                 docName: docId,
+                timing: documentSnapshot['timeIndex'],
                 phoneNumber: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
                 day: date,
@@ -274,6 +185,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
             recentBookings.add(
               UserprofilesectionItemWidget(
+                timing: documentSnapshot['timeIndex'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
                 date: date,
@@ -353,8 +265,10 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
       itemCount: newBookings.length,
       itemBuilder: (context, index, realIndex) {
         return NewBookingWidget(
+          //customerId: newBookings[index].customerId,
           docName: newBookings[index].docName,
           address: newBookings[index].address,
+          timing: newBookings[index].timing,
           day: newBookings[index].day,
           phoneNumber: newBookings[index].phoneNumber,
         );
@@ -504,6 +418,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           itemCount: recentBookings.length,
           itemBuilder: (context, index) {
             return UserprofilesectionItemWidget(
+              timing: recentBookings[index].timing,
               phone: recentBookings[index].phone,
               address: recentBookings[index].address,
               date: recentBookings[index].date,

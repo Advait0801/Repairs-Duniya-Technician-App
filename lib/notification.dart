@@ -1,20 +1,23 @@
-import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'dart:developer';
+
+import 'package:technician_app/core/app_export.dart';
 
 class PushNotificationSystem {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   User? _user;
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   // for termination state
   Future whenNotificationReceived(BuildContext context) async {
     try {
+      _user = _auth.currentUser;
+
       FirebaseMessaging.instance
           .getInitialMessage()
           .then((RemoteMessage? remoteMessage) {
@@ -25,9 +28,9 @@ class PushNotificationSystem {
             remoteMessage.data["user"],
             context,
           );
-          Future.delayed(const Duration(seconds: 2), () {
-            showToast("New notification received!");
-          });
+          // Future.delayed(Duration(seconds: 2), () {
+          //   showToast("New notification received!");
+          // });
         }
       });
 
@@ -35,12 +38,12 @@ class PushNotificationSystem {
       FirebaseMessaging.onMessage.listen((RemoteMessage? remoteMessage) {
         if (remoteMessage != null) {
           openAppShowAndShowNotification(
-            remoteMessage.data?["phonenumber"],
-            remoteMessage.data?["documentName"],
-            remoteMessage.data?["user"],
+            remoteMessage.data["phonenumber"],
+            remoteMessage.data["documentName"],
+            remoteMessage.data["user"],
             context,
           );
-          showToast("New notification received!");
+          // showToast("New notification received!");
         }
       });
 
@@ -49,12 +52,12 @@ class PushNotificationSystem {
           .listen((RemoteMessage? remoteMessage) {
         if (remoteMessage != null) {
           openAppShowAndShowNotification(
-            remoteMessage.data?["phonenumber"],
-            remoteMessage.data?["documentName"],
-            remoteMessage.data?["user"],
+            remoteMessage.data["phonenumber"],
+            remoteMessage.data["documentName"],
+            remoteMessage.data["user"],
             context,
           );
-          showToast("New notification received!");
+          // showToast("New notification received!");
         }
       });
     } catch (error) {
@@ -78,9 +81,27 @@ class PushNotificationSystem {
       phoneNumber, documentName, user, context) async {
     try {
       log(user);
-      showToast(user);
+      log(_user!.uid);
+      log(documentName);
+      log(phoneNumber);
 
-      if (_user != null) {
+      if (_user != null &&
+          phoneNumber != null &&
+          documentName != null &&
+          user != null) {
+        String customerTokenId = '';
+
+        await FirebaseFirestore.instance
+            .collection('customers')
+            .doc(user)
+            .get()
+            .then((snapshot) {
+          if (snapshot.data()!['device_token'] != null) {
+            customerTokenId = snapshot.data()!['device_token'].toString();
+            log(customerTokenId);
+          }
+        });
+
         await FirebaseFirestore.instance
             .collection("customers")
             .doc(user)
@@ -91,10 +112,19 @@ class PushNotificationSystem {
           if (snapshot.exists) {
             bool job = snapshot.data()?['jobAcceptance'] ?? false;
             String phoneNumber = snapshot.data()?['userPhoneNumber'] ?? "error";
-            int time = snapshot.data()?['timeIndex'] ?? 0;
-            DateTime date = snapshot.data()?['timeIndex'] ?? DateTime.now();
+            int time = snapshot.data()?['timeIndex'] ?? -1;
+            DateTime date = snapshot.data()?['serviceDate'] ?? DateTime.now();
             bool urgentBooking = snapshot.data()?['urgentBooking'] ?? false;
             String address = snapshot.data()?['address']?.toString() ?? "hello";
+
+            String timing = '';
+            if (time == 0) {
+              timing = 'Morning';
+            } else if (time == 1) {
+              timing = 'Afternoon';
+            } else if (time == 2) {
+              timing = 'Evening';
+            }
 
             await _firestore
                 .collection('technicians')
@@ -103,12 +133,15 @@ class PushNotificationSystem {
                 .doc(documentName)
                 .set({
               'jobAcceptance': job,
-              'timeIndex': time,
+              'timeIndex': timing,
               'date': date,
+              'serviceId': documentName,
               'customerPhone': phoneNumber,
               'urgentBooking': urgentBooking,
               'customerAddress': address,
               'status': 'p',
+              'customerId': user,
+              'customerTokenId': customerTokenId
             }, SetOptions(merge: true));
           } else {
             // Handle the case where the document does not exist
@@ -117,7 +150,7 @@ class PushNotificationSystem {
         });
       } else {
         // Handle the case where _user is null
-        log("_user is null.");
+        log("something is null.");
       }
     } catch (error) {
       log("Error in openAppShowAndShowNotification: $error");

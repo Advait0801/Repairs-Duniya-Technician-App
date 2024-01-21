@@ -7,11 +7,13 @@ class UserprofilesectionItemWidget extends StatelessWidget {
       {super.key,
       required this.phone,
       required this.address,
+      required this.timing,
       required this.date});
 
   final String phone;
   final String address;
   final String date;
+  final String timing;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +125,7 @@ class UserprofilesectionItemWidget extends StatelessWidget {
                       bottom: 2.v,
                     ),
                     child: Text(
-                      "Morning",
+                      timing,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
