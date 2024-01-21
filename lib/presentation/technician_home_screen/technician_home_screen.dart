@@ -362,7 +362,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
       options: CarouselOptions(
         viewportFraction: 1,
         aspectRatio: 16 / 11,
-        autoPlay: true,
+        autoPlay: false,
         enableInfiniteScroll: false,
         autoPlayInterval: const Duration(seconds: 3),
       ),

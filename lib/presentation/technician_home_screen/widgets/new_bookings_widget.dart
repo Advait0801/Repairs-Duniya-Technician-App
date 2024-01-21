@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +28,9 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
+  static const time = Duration(minutes: 3);
+  Duration duration = const Duration();
+  Timer? timer;
 
   @override
   void initState() {
@@ -37,6 +40,29 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
         _user = user;
       });
     });
+    startTimer();
+    reset();
+  }
+
+  void reset() {
+    setState(() {
+      duration = time;
+    });
+  }
+
+  void countDown() {
+    setState(() {
+      final seconds = duration.inSeconds - 1;
+      if (seconds < 0) {
+        timer?.cancel();
+      } else {
+        duration = Duration(seconds: seconds);
+      }
+    });
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (_) => countDown());
   }
 
   Future<void> setStatus(String status) async {
@@ -206,21 +232,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
                         ),
                       ),
                       SizedBox(height: 3.v),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "03:00",
-                              style: theme.textTheme.titleLarge,
-                            ),
-                            TextSpan(
-                              text: "min",
-                              style: theme.textTheme.labelMedium,
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
+                      _buildTimer(context),
                       SizedBox(height: 11.v),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -282,6 +294,32 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
           ),
         ],
       ),
+    );
+  }
+
+  _buildTimer(BuildContext context) {
+    return buildTime();
+  }
+
+  Widget buildTime() {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String minutes = twoDigits(duration.inMinutes.remainder(60));
+    String seconds = twoDigits(duration.inSeconds.remainder(60));
+
+    return RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: '$minutes:$seconds',
+            style: theme.textTheme.titleLarge,
+          ),
+          TextSpan(
+            text: "min",
+            style: theme.textTheme.labelMedium,
+          ),
+        ],
+      ),
+      textAlign: TextAlign.left,
     );
   }
 }

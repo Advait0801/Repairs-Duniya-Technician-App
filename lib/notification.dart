@@ -20,12 +20,12 @@ class PushNotificationSystem {
           .then((RemoteMessage? remoteMessage) {
         if (remoteMessage != null) {
           openAppShowAndShowNotification(
-            remoteMessage.data?["phonenumber"],
-            remoteMessage.data?["documentName"],
-            remoteMessage.data?["user"],
+            remoteMessage.data["phonenumber"],
+            remoteMessage.data["documentName"],
+            remoteMessage.data["user"],
             context,
           );
-          Future.delayed(Duration(seconds: 2), () {
+          Future.delayed(const Duration(seconds: 2), () {
             showToast("New notification received!");
           });
         }
