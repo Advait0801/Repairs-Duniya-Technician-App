@@ -162,29 +162,34 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           String docId = documentSnapshot.id;
           if (documentSnapshot['status'] == 'p') {
             Timestamp timeStamp = documentSnapshot['date'];
+            log(timeStamp.toString());
             DateTime datetime = timeStamp.toDate();
+            String time = '${datetime.minute}:${datetime.second}';
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             newBookings.add(
               NewBookingWidget(
+                date: date,
                 service: documentSnapshot['serviceName'],
                 docName: docId,
                 timing: documentSnapshot['timeIndex'],
                 phoneNumber: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
-                day: date,
+                time: time,
               ),
             );
           } else if (documentSnapshot['status'] == 'c') {
             Timestamp timestamp = documentSnapshot['date'];
-            DateTime dateTime = timestamp.toDate();
-            String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+            DateTime datetime = timestamp.toDate();
+            String time = '${datetime.minute}:${datetime.second}';
+            String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             recentBookings.add(
               UserprofilesectionItemWidget(
-                service: documentSnapshot['service'],
+                date: date,
+                service: documentSnapshot['serviceName'],
                 timing: documentSnapshot['timeIndex'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
-                date: date,
+                time: time,
               ),
             );
           }
@@ -265,7 +270,8 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           docName: newBookings[index].docName,
           address: newBookings[index].address,
           timing: newBookings[index].timing,
-          day: newBookings[index].day,
+          time: newBookings[index].time,
+          date: newBookings[index].date,
           phoneNumber: newBookings[index].phoneNumber,
         );
       },
@@ -414,11 +420,12 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           itemCount: recentBookings.length,
           itemBuilder: (context, index) {
             return UserprofilesectionItemWidget(
+              date: recentBookings[index].date,
               service: recentBookings[index].service,
               timing: recentBookings[index].timing,
               phone: recentBookings[index].phone,
               address: recentBookings[index].address,
-              date: recentBookings[index].date,
+              time: recentBookings[index].time,
             );
           },
         ),

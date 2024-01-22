@@ -136,7 +136,7 @@ class PushNotificationSystem {
               'jobAcceptance': job,
               'timeIndex': timing,
               'date': date,
-              'service': service,
+              'serviceName': service,
               'serviceId': documentName,
               'customerPhone': phoneNumber,
               'urgentBooking': urgentBooking,

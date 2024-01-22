@@ -9,12 +9,14 @@ class UserprofilesectionItemWidget extends StatelessWidget {
       required this.phone,
       required this.address,
       required this.timing,
-      required this.date});
+      required this.date,
+      required this.time});
 
   final String phone;
   final String address;
-  final String service;
   final String date;
+  final String service;
+  final String time;
   final String timing;
 
   @override
