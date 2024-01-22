@@ -5,6 +5,7 @@ import 'package:technician_app/core/app_export.dart';
 class UserprofilesectionItemWidget extends StatelessWidget {
   const UserprofilesectionItemWidget(
       {super.key,
+      required this.service,
       required this.phone,
       required this.address,
       required this.timing,
@@ -12,6 +13,7 @@ class UserprofilesectionItemWidget extends StatelessWidget {
 
   final String phone;
   final String address;
+  final String service;
   final String date;
   final String timing;
 
@@ -73,7 +75,7 @@ class UserprofilesectionItemWidget extends StatelessWidget {
                       bottom: 3.v,
                     ),
                     child: Text(
-                      "AC - AC installation",
+                      service,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,

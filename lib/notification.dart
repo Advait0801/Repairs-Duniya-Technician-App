@@ -4,8 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'dart:developer';
-
-import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 
 class PushNotificationSystem {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -116,6 +115,8 @@ class PushNotificationSystem {
             DateTime date = snapshot.data()?['serviceDate'] ?? DateTime.now();
             bool urgentBooking = snapshot.data()?['urgentBooking'] ?? false;
             String address = snapshot.data()?['address']?.toString() ?? "hello";
+            String service =
+                snapshot.data()?['serviceName']?.toString() ?? 'hello';
 
             String timing = '';
             if (time == 0) {
@@ -135,6 +136,7 @@ class PushNotificationSystem {
               'jobAcceptance': job,
               'timeIndex': timing,
               'date': date,
+              'service': service,
               'serviceId': documentName,
               'customerPhone': phoneNumber,
               'urgentBooking': urgentBooking,
@@ -143,6 +145,11 @@ class PushNotificationSystem {
               'customerId': user,
               'customerTokenId': customerTokenId
             }, SetOptions(merge: true));
+
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const TechnicianHomeScreen()));
           } else {
             // Handle the case where the document does not exist
             log("Document does not exist.");

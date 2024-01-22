@@ -413,45 +413,46 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     log(rejected.length.toString());
     log(pending.length.toString());
     return Expanded(
-        child: Padding(
-      padding: EdgeInsets.only(left: 10.h, right: 7.h),
-      child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        shrinkWrap: true,
-        separatorBuilder: (context, index) {
-          return SizedBox(
-            height: 19.v,
-          );
-        },
-        itemCount: screenId == 'c'
-            ? completed.length
-            : screenId == 'p' || screenId == 's'
-                ? pending.length
-                : rejected.length,
-        itemBuilder: (context, index) {
-          if (screenId == 'c') {
-            return CompletedWidget(
-              phone: completed[index].phone,
-              address: completed[index].address,
-              date: completed[index].date,
+      child: Padding(
+        padding: EdgeInsets.only(left: 10.h, right: 7.h),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          separatorBuilder: (context, index) {
+            return SizedBox(
+              height: 19.v,
             );
-          } else if (screenId == 'p' || screenId == 's') {
-            return PendingWidget(
-              docName: pending[index].docName,
-              id: screenId,
-              phone: pending[index].phone,
-              address: pending[index].address,
-              date: pending[index].date,
-            );
-          } else {
-            return DeclineWidget(
-              phone: rejected[index].phone,
-              address: rejected[index].address,
-              date: rejected[index].date,
-            );
-          }
-        },
+          },
+          itemCount: screenId == 'c'
+              ? completed.length
+              : screenId == 'p' || screenId == 's'
+                  ? pending.length
+                  : rejected.length,
+          itemBuilder: (context, index) {
+            if (screenId == 'c') {
+              return CompletedWidget(
+                phone: completed[index].phone,
+                address: completed[index].address,
+                date: completed[index].date,
+              );
+            } else if (screenId == 'p' || screenId == 's') {
+              return PendingWidget(
+                docName: pending[index].docName,
+                id: pending[index].id,
+                phone: pending[index].phone,
+                address: pending[index].address,
+                date: pending[index].date,
+              );
+            } else {
+              return DeclineWidget(
+                phone: rejected[index].phone,
+                address: rejected[index].address,
+                date: rejected[index].date,
+              );
+            }
+          },
+        ),
       ),
-    ));
+    );
   }
 }

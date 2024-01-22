@@ -27,6 +27,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
+  bool isLoaded = false;
 
   @override
   void initState() {
@@ -52,11 +53,15 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       await _uploadFile(imageIDFrontPath!, 'front');
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const VerificationCompleteScreen()));
+      setState(() {
+        isLoaded = true;
+      });
+      isLoaded
+          ? Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const VerificationCompleteScreen()))
+          : CircularProgressIndicator();
     } catch (e) {
       log("Failed to upload files: $e");
     }

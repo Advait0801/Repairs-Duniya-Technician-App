@@ -5,21 +5,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class NewBookingWidget extends StatefulWidget {
-  //final String customerId;
   final String phoneNumber;
   final String address;
   final String day;
   final String docName;
   final String timing;
+  final String service;
 
   const NewBookingWidget(
       {super.key,
-      // required this.customerId,
+      required this.service,
       required this.docName,
       required this.address,
       required this.day,
@@ -64,6 +65,11 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
       final seconds = duration.inSeconds - 1;
       if (seconds < 0) {
         timer?.cancel();
+        setStatus('r');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const TechnicianHomeScreen()));
       } else {
         duration = Duration(seconds: seconds);
       }
@@ -144,7 +150,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
                             bottom: 3.v,
                           ),
                           child: Text(
-                            "AC - AC installation",
+                            widget.service,
                             style: theme.textTheme.bodyMedium,
                           ),
                         ),
@@ -266,8 +272,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
                 Expanded(
                   child: CustomElevatedButton(
                     onPressed: () {
-                      //fetchDetails();
-                      notificationFormat(_user!.uid);
+                      sendingNotification();
                       setStatus('p');
                       Navigator.push(
                           context,
@@ -308,27 +313,7 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
     );
   }
 
-  Future<void> fetchDetails() async {
-    try {
-      await _firestore
-          .collection('technicians')
-          .doc(_user!.uid)
-          .collection('serviceList')
-          .doc(widget.docName)
-          .get()
-          .then((snapshot) {
-        setState(() {
-          customerId = snapshot.data()!['customerId'];
-          customerTokenId = snapshot.data()!['customerTokenId'];
-          log(customerTokenId);
-        });
-      });
-    } catch (e) {
-      log(e.toString());
-    }
-  }
-
-  notificationFormat(technicianId) async {
+  Future<void> sendingNotification() async {
     await _firestore
         .collection('technicians')
         .doc(_user!.uid)
@@ -343,52 +328,56 @@ class _NewBookingWidgetState extends State<NewBookingWidget> {
       });
     });
 
-    log("Building notification format...");
-    log("dvnkjsnvkdnvkdnvkds");
+    notificationFormat() async {
+      log("Building notification format...");
 
-    Map<String, String> headerNotification = {
-      "Content-Type": "application/json",
-      "Authorization":
-          "key=AAAA0PM0nhk:APA91bEEQmPk1eVc7fRsFUrI5ziYm-zWCi_5BrO88PDz5A48YUU96Iwrp0fIBJ6CV6HGXsn13yOFzvKxb0Fnk2VZyK7g1cPXBm1KimmoP_028MLNiSKsULtk2h9P1QU2kNIxmSBV2h1L",
-    };
+      Map<String, String> headerNotification = {
+        "Content-Type": "application/json",
+        "Authorization":
+            "key=AAAA0PM0nhk:APA91bGFFhcYO051DiIDsKkcBX5cuOMWwAD_OhGxojHbiBdSogf5IJ7M0sptK8PVl7ifwsbLAziNw9F0KTRfPTTm9ePqf0oFpbmLaQErM4HK9Inz7P7_3JWjmzX-1m8DFtlRTeeJe3KL",
+      };
 
-    Map bodyNotification = {
-      "body":
-          "Your service request has been successfully accepted by ${_user!.phoneNumber}",
-      "title": "Technician Assigned",
-    };
+      Map bodyNotification = {
+        "body":
+            "Your service request has been successfully accepted by ${_user!.phoneNumber}",
+        "title": "Technician Assigned",
+      };
 
-    Map dataMap = {
-      "click_action": "FLUTTER_NOTIFICATION_CLICK",
-      "id": "1",
-      "status": "done",
-      "phonenumber": _user!.phoneNumber,
-      "user": _user!.uid,
-    };
+      Map dataMap = {
+        "click_action": "FLUTTER_NOTIFICATION_CLICK",
+        "id": "1",
+        "status": "done",
+        "phonenumber": _user!.phoneNumber,
+        "user": _user!.uid,
+      };
 
-    Map notificationFormat = {
-      "notification": bodyNotification,
-      "data": dataMap,
-      "priority": "high",
-      "to": customerTokenId,
-    };
+      Map notificationFormat = {
+        "notification": bodyNotification,
+        "data": dataMap,
+        "priority": "high",
+        "to": customerTokenId,
+      };
 
-    log("Sending notification to customer $customerId...");
-    try {
-      final response = await http.post(
-        Uri.parse("https://fcm.googleapis.com/fcm/send"),
-        headers: headerNotification,
-        body: jsonEncode(notificationFormat),
-      );
+      log("Sending notification to customer $customerId...");
+      try {
+        final response = await http.post(
+          Uri.parse("https://fcm.googleapis.com/fcm/send"),
+          headers: headerNotification,
+          body: jsonEncode(notificationFormat),
+        );
 
-      if (response.statusCode == 200) {
-        log("Notification sent successfully to technician $customerId.");
-      } else {
-        log("Failed to send notification to technician $technicianId. Status code: ${response.statusCode}");
+        if (response.statusCode == 200) {
+          log("Notification sent successfully to technician $customerId.");
+          log(customerTokenId);
+        } else {
+          log("Failed to send notification to technician ${_user!.uid} Status code: ${response.statusCode}");
+        }
+      } catch (e) {
+        log("Error while sending notification to technician ${_user!.uid}: $e");
       }
-    } catch (e) {
-      log("Error while sending notification to technician $technicianId: $e");
     }
+
+    notificationFormat();
   }
 
   _buildTimer(BuildContext context) {

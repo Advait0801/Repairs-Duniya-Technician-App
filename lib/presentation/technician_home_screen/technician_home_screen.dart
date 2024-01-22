@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
@@ -146,9 +144,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   }
 
   void _hideHalfPage(BuildContext context) {
-    // Use Navigator.pop(context) to remove the topmost route
-    Navigator.pop(context);
-    // Update the state or perform other actions as needed
     setState(() {
       showHalfPage = false;
     });
@@ -171,7 +166,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             newBookings.add(
               NewBookingWidget(
-                //customerId: customerTokenId!,
+                service: documentSnapshot['serviceName'],
                 docName: docId,
                 timing: documentSnapshot['timeIndex'],
                 phoneNumber: documentSnapshot['customerPhone'],
@@ -185,6 +180,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
             recentBookings.add(
               UserprofilesectionItemWidget(
+                service: documentSnapshot['service'],
                 timing: documentSnapshot['timeIndex'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
@@ -265,7 +261,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
       itemCount: newBookings.length,
       itemBuilder: (context, index, realIndex) {
         return NewBookingWidget(
-          //customerId: newBookings[index].customerId,
+          service: newBookings[index].service,
           docName: newBookings[index].docName,
           address: newBookings[index].address,
           timing: newBookings[index].timing,
@@ -418,6 +414,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           itemCount: recentBookings.length,
           itemBuilder: (context, index) {
             return UserprofilesectionItemWidget(
+              service: recentBookings[index].service,
               timing: recentBookings[index].timing,
               phone: recentBookings[index].phone,
               address: recentBookings[index].address,
