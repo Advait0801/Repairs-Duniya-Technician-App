@@ -77,9 +77,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           } else if (documentSnapshot['status'] == 'c') {
             Timestamp timestamp = documentSnapshot['date'];
             DateTime dateTime = timestamp.toDate();
+            String time =
+                '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
             completed.add(
               CompletedWidget(
+                time: time,
+                timing: documentSnapshot['timeIndex'],
+                serviceName: documentSnapshot['serviceName'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
                 date: date,
@@ -88,9 +93,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           } else if (documentSnapshot['status'] == 'r') {
             Timestamp timestamp = documentSnapshot['date'];
             DateTime dateTime = timestamp.toDate();
+            String time =
+                '${dateTime.hour}:${dateTime.minute}:${dateTime.second}';
             String date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
             rejected.add(
               DeclineWidget(
+                time: time,
+                timing: documentSnapshot['timeIndex'],
+                serviceName: documentSnapshot['serviceName'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
                 date: date,
@@ -100,7 +110,41 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
         }
       }
 
-      pending.sort((a, b) => b.id.compareTo(a.id));
+      pending.sort((a, b) {
+        int c1 = b.id.compareTo(a.id);
+        int c2 = b.date.compareTo(a.date);
+
+        // You need to return a value based on the comparison
+        if (c1 != 0) {
+          return c1;
+        } else {
+          return c2;
+        }
+      });
+
+      completed.sort((a, b) {
+        int c1 = b.date.compareTo(a.date);
+        int c2 = b.time.compareTo(a.time);
+
+        // You need to return a value based on the comparison
+        if (c1 != 0) {
+          return c1;
+        } else {
+          return c2;
+        }
+      });
+
+      rejected.sort((a, b) {
+        int c1 = b.date.compareTo(a.date);
+        int c2 = b.time.compareTo(a.time);
+
+        // You need to return a value based on the comparison
+        if (c1 != 0) {
+          return c1;
+        } else {
+          return c2;
+        }
+      });
     } catch (e) {
       log("Error fetching data: $e");
     }
@@ -127,8 +171,6 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   }
 
   void _hideHalfPage(BuildContext context) {
-    // Use Navigator.pop(context) to remove the topmost route
-    Navigator.pop(context);
     // Update the state or perform other actions as needed
     setState(() {
       showHalfPage = false;
@@ -431,6 +473,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
           itemBuilder: (context, index) {
             if (screenId == 'c') {
               return CompletedWidget(
+                time: completed[index].time,
+                timing: completed[index].timing,
+                serviceName: completed[index].serviceName,
                 phone: completed[index].phone,
                 address: completed[index].address,
                 date: completed[index].date,
@@ -445,6 +490,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               );
             } else {
               return DeclineWidget(
+                time: rejected[index].time,
+                timing: rejected[index].timing,
+                serviceName: rejected[index].serviceName,
                 phone: rejected[index].phone,
                 address: rejected[index].address,
                 date: rejected[index].date,

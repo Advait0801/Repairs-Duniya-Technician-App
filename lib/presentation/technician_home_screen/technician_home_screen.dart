@@ -162,9 +162,9 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           String docId = documentSnapshot.id;
           if (documentSnapshot['status'] == 'p') {
             Timestamp timeStamp = documentSnapshot['date'];
-            log(timeStamp.toString());
             DateTime datetime = timeStamp.toDate();
-            String time = '${datetime.minute}:${datetime.second}';
+            String time =
+                '${datetime.hour}:${datetime.minute}:${datetime.second}';
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             newBookings.add(
               NewBookingWidget(
@@ -180,7 +180,8 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           } else if (documentSnapshot['status'] == 'c') {
             Timestamp timestamp = documentSnapshot['date'];
             DateTime datetime = timestamp.toDate();
-            String time = '${datetime.minute}:${datetime.second}';
+            String time =
+                '${datetime.hour}:${datetime.minute}:${datetime.second}';
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             recentBookings.add(
               UserprofilesectionItemWidget(
@@ -195,6 +196,30 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
           }
         }
       }
+
+      newBookings.sort((a, b) {
+        int c1 = b.date.compareTo(a.date);
+        int c2 = b.time.compareTo(a.time);
+
+        // You need to return a value based on the comparison
+        if (c1 != 0) {
+          return c1;
+        } else {
+          return c2;
+        }
+      });
+
+      recentBookings.sort((a, b) {
+        int c1 = b.date.compareTo(a.date);
+        int c2 = b.time.compareTo(a.time);
+
+        // You need to return a value based on the comparison
+        if (c1 != 0) {
+          return c1;
+        } else {
+          return c2;
+        }
+      });
     } catch (e) {
       log("Error fetching data: $e");
     }

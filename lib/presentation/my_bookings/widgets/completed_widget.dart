@@ -3,12 +3,19 @@ import 'package:technician_app/core/app_export.dart';
 
 // ignore: must_be_immutable
 class CompletedWidget extends StatelessWidget {
-  const CompletedWidget(
-      {super.key,
-      required this.phone,
-      required this.address,
-      required this.date});
+  const CompletedWidget({
+    super.key,
+    required this.phone,
+    required this.time,
+    required this.address,
+    required this.timing,
+    required this.serviceName,
+    required this.date,
+  });
   final String phone;
+  final String timing;
+  final String time;
+  final String serviceName;
   final String address;
   final String date;
 
@@ -70,7 +77,7 @@ class CompletedWidget extends StatelessWidget {
                       bottom: 3.v,
                     ),
                     child: Text(
-                      "AC - AC installation",
+                      serviceName,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
@@ -122,7 +129,7 @@ class CompletedWidget extends StatelessWidget {
                       bottom: 2.v,
                     ),
                     child: Text(
-                      "Morning",
+                      timing,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,

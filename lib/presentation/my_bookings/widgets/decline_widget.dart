@@ -6,10 +6,16 @@ class DeclineWidget extends StatelessWidget {
   const DeclineWidget(
       {super.key,
       required this.phone,
+      required this.timing,
+      required this.time,
+      required this.serviceName,
       required this.address,
       required this.date});
   final String phone;
   final String address;
+  final String serviceName;
+  final String time;
+  final String timing;
   final String date;
 
   @override
@@ -67,7 +73,7 @@ class DeclineWidget extends StatelessWidget {
                       bottom: 2.v,
                     ),
                     child: Text(
-                      "AC - AC installation",
+                      serviceName,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
@@ -119,7 +125,7 @@ class DeclineWidget extends StatelessWidget {
                       bottom: 2.v,
                     ),
                     child: Text(
-                      "Morning",
+                      timing,
                       style: TextStyle(
                         color: appTheme.blueGray700,
                         fontSize: 13.740318298339844.fSize,
