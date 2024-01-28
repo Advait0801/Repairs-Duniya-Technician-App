@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -8,13 +7,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:technician_app/notification.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
-import 'package:technician_app/presentation/technician_home_screen/widgets/new_bookings_widget.dart';
-import 'package:technician_app/presentation/technician_home_screen/widgets/userprofilesection_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
+import 'package:technician_app/widgets/completed_widget.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/decline_widget.dart';
 import 'package:technician_app/widgets/half_page.dart';
 
 class TechnicianHomeScreen extends StatefulWidget {
@@ -31,8 +30,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   User? _user;
   LatLng? _currentPosition;
   bool showHalfPage = false;
-  List<NewBookingWidget> newBookings = [];
-  List<UserprofilesectionItemWidget> recentBookings = [];
+  List<dynamic> recentBookings = [];
 
   @override
   void initState() {
@@ -159,55 +157,36 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
 
       if (querySnapshot.docs.isNotEmpty) {
         for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-          String docId = documentSnapshot.id;
-          if (documentSnapshot['status'] == 'p') {
-            Timestamp timeStamp = documentSnapshot['date'];
-            DateTime datetime = timeStamp.toDate();
-            String time =
-                '${datetime.hour}:${datetime.minute}:${datetime.second}';
-            String date = '${datetime.day}/${datetime.month}/${datetime.year}';
-            newBookings.add(
-              NewBookingWidget(
-                date: date,
-                service: documentSnapshot['serviceName'],
-                docName: docId,
-                timing: documentSnapshot['timeIndex'],
-                phoneNumber: documentSnapshot['customerPhone'],
-                address: documentSnapshot['customerAddress'],
-                time: time,
-              ),
-            );
-          } else if (documentSnapshot['status'] == 'c') {
-            Timestamp timestamp = documentSnapshot['date'];
-            DateTime datetime = timestamp.toDate();
-            String time =
-                '${datetime.hour}:${datetime.minute}:${datetime.second}';
-            String date = '${datetime.day}/${datetime.month}/${datetime.year}';
-            recentBookings.add(
-              UserprofilesectionItemWidget(
-                date: date,
-                service: documentSnapshot['serviceName'],
-                timing: documentSnapshot['timeIndex'],
-                phone: documentSnapshot['customerPhone'],
-                address: documentSnapshot['customerAddress'],
-                time: time,
-              ),
-            );
+          Timestamp timestamp = documentSnapshot['date'];
+          DateTime datetime = timestamp.toDate();
+          String time =
+              '${datetime.hour}:${datetime.minute}:${datetime.second}';
+          String date = '${datetime.day}/${datetime.month}/${datetime.year}';
+          if (documentSnapshot['status'] == 'c') {
+            recentBookings.add(CompletedWidget(
+              phone: documentSnapshot['customerPhone'],
+              time: time,
+              address: documentSnapshot['customerAddress'],
+              timing: documentSnapshot['urgentBooking'] == true
+                  ? 'Urgent Booking'
+                  : documentSnapshot['timeIndex'],
+              serviceName: documentSnapshot['serviceName'],
+              date: date,
+            ));
+          } else if (documentSnapshot['status'] == 'r') {
+            recentBookings.add(DeclineWidget(
+              phone: documentSnapshot['customerPhone'],
+              timing: documentSnapshot['urgentBooking'] == true
+                  ? 'Urgent Booking'
+                  : documentSnapshot['timeIndex'],
+              time: time,
+              serviceName: documentSnapshot['serviceName'],
+              address: documentSnapshot['customerAddress'],
+              date: date,
+            ));
           }
         }
       }
-
-      newBookings.sort((a, b) {
-        int c1 = b.date.compareTo(a.date);
-        int c2 = b.time.compareTo(a.time);
-
-        // You need to return a value based on the comparison
-        if (c1 != 0) {
-          return c1;
-        } else {
-          return c2;
-        }
-      });
 
       recentBookings.sort((a, b) {
         int c1 = b.date.compareTo(a.date);
@@ -252,19 +231,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Padding(
-                            padding: EdgeInsets.only(left: 4.h),
-                            child: Text(
-                              "New Bookings",
-                              style: theme.textTheme.headlineSmall,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 13.v),
-                        _buildBookingRow(context),
-                        SizedBox(height: 40.v),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
                             padding: EdgeInsets.only(left: 10.h),
                             child: Text(
                               "Recent Bookings",
@@ -273,7 +239,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                           ),
                         ),
                         SizedBox(height: 26.v),
-                        _buildUserProfileList(context),
+                        // _buildUserProfileList(context),
                       ],
                     ),
                   ),
@@ -282,30 +248,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBookingRow(BuildContext context) {
-    return CarouselSlider.builder(
-      itemCount: newBookings.length,
-      itemBuilder: (context, index, realIndex) {
-        return NewBookingWidget(
-          service: newBookings[index].service,
-          docName: newBookings[index].docName,
-          address: newBookings[index].address,
-          timing: newBookings[index].timing,
-          time: newBookings[index].time,
-          date: newBookings[index].date,
-          phoneNumber: newBookings[index].phoneNumber,
-        );
-      },
-      options: CarouselOptions(
-        viewportFraction: 1,
-        aspectRatio: 16 / 11,
-        autoPlay: false,
-        enableInfiniteScroll: false,
-        autoPlayInterval: const Duration(seconds: 3),
       ),
     );
   }
@@ -426,35 +368,35 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     );
   }
 
-  /// Section Widget
-  Widget _buildUserProfileList(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 9.h),
-        child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (
-            context,
-            index,
-          ) {
-            return SizedBox(
-              height: 16.v,
-            );
-          },
-          itemCount: recentBookings.length,
-          itemBuilder: (context, index) {
-            return UserprofilesectionItemWidget(
-              date: recentBookings[index].date,
-              service: recentBookings[index].service,
-              timing: recentBookings[index].timing,
-              phone: recentBookings[index].phone,
-              address: recentBookings[index].address,
-              time: recentBookings[index].time,
-            );
-          },
-        ),
-      ),
-    );
-  }
+  // Section Widget
+  // Widget _buildUserProfileList(BuildContext context) {
+  //   return Expanded(
+  //     child: Padding(
+  //       padding: EdgeInsets.symmetric(horizontal: 9.h),
+  //       child: ListView.separated(
+  //         physics: const BouncingScrollPhysics(),
+  //         shrinkWrap: true,
+  //         separatorBuilder: (
+  //           context,
+  //           index,
+  //         ) {
+  //           return SizedBox(
+  //             height: 16.v,
+  //           );
+  //         },
+  //         itemCount: recentBookings.length,
+  //         itemBuilder: (context, index) {
+  //           return UserprofilesectionItemWidget(
+  //             date: recentBookings[index].date,
+  //             service: recentBookings[index].service,
+  //             timing: recentBookings[index].timing,
+  //             phone: recentBookings[index].phone,
+  //             address: recentBookings[index].address,
+  //             time: recentBookings[index].time,
+  //           );
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 }

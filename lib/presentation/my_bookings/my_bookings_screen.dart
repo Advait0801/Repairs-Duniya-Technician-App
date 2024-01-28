@@ -1,20 +1,17 @@
 // ignore_for_file: unused_field, must_be_immutable
-
-import 'dart:convert';
 import 'dart:developer';
-import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
-import 'package:technician_app/presentation/my_bookings/widgets/completed_widget.dart';
-import 'package:technician_app/presentation/my_bookings/widgets/decline_widget.dart';
-import 'package:technician_app/presentation/my_bookings/widgets/pending_widget.dart';
 import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
+import 'package:technician_app/widgets/completed_widget.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/decline_widget.dart';
 import 'package:technician_app/widgets/half_page.dart';
+import 'package:technician_app/widgets/pending_widget.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   MyBookingsScreen({super.key, required this.id});
@@ -67,8 +64,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             String date = '${datetime.day}/${datetime.month}/${datetime.year}';
             pending.add(
               PendingWidget(
+                serviceName: documentSnapshot['serviceName'],
                 id: documentSnapshot['status'],
                 docName: docId,
+                timing: documentSnapshot['urgentBooking'] == true
+                    ? 'Urgent Booking'
+                    : documentSnapshot['timeIndex'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
                 date: date,
@@ -83,7 +84,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             completed.add(
               CompletedWidget(
                 time: time,
-                timing: documentSnapshot['timeIndex'],
+                timing: documentSnapshot['urgentBooking'] == true
+                    ? 'Urgent Booking'
+                    : documentSnapshot['timeIndex'],
                 serviceName: documentSnapshot['serviceName'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
@@ -99,7 +102,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
             rejected.add(
               DeclineWidget(
                 time: time,
-                timing: documentSnapshot['timeIndex'],
+                timing: documentSnapshot['urgentBooking'] == true
+                    ? 'Urgent Booking'
+                    : documentSnapshot['timeIndex'],
                 serviceName: documentSnapshot['serviceName'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
@@ -482,6 +487,8 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               );
             } else if (screenId == 'p' || screenId == 's') {
               return PendingWidget(
+                serviceName: pending[index].serviceName,
+                timing: pending[index].timing,
                 docName: pending[index].docName,
                 id: pending[index].id,
                 phone: pending[index].phone,

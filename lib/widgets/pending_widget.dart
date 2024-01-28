@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/end_selfie_screen.dart';
@@ -16,11 +13,15 @@ class PendingWidget extends StatefulWidget {
     required this.id,
     required this.phone,
     required this.address,
+    required this.serviceName,
+    required this.timing,
     required this.date,
   });
 
   final String id;
   final String phone;
+  final String timing;
+  final String serviceName;
   final String address;
   final String date;
   final String docName;
@@ -94,7 +95,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                             bottom: 2.v,
                           ),
                           child: Text(
-                            "AC - AC installation",
+                            widget.serviceName,
                             style: TextStyle(
                               color: appTheme.blueGray700,
                               fontSize: 13.740318298339844.fSize,
@@ -146,7 +147,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                             bottom: 2.v,
                           ),
                           child: Text(
-                            "Morning",
+                            widget.timing,
                             style: TextStyle(
                               color: appTheme.blueGray700,
                               fontSize: 13.740318298339844.fSize,
