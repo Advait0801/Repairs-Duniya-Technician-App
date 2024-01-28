@@ -26,9 +26,6 @@ class PushNotificationSystem {
             remoteMessage.data["user"],
             context,
           );
-          // Future.delayed(Duration(seconds: 2), () {
-          //   showToast("New notification received!");
-          // });
         }
       });
 
@@ -41,7 +38,6 @@ class PushNotificationSystem {
             remoteMessage.data["user"],
             context,
           );
-          // showToast("New notification received!");
         }
       });
 
@@ -55,7 +51,6 @@ class PushNotificationSystem {
             remoteMessage.data["user"],
             context,
           );
-          // showToast("New notification received!");
         }
       });
     } catch (error) {
