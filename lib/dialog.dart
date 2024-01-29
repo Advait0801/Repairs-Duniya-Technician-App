@@ -50,7 +50,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
   late bool _urgent;
   late String _address;
   late String _phoneNumber;
-  late DateTime _date;
+  late String _date;
   late String _customerUser;
 
   @override
@@ -69,7 +69,9 @@ class _NotificationDialogState extends State<NotificationDialog> {
     _urgent = widget.urgent;
     _address = widget.address;
     _phoneNumber = widget.phoneNumber;
-    _date = widget.date;
+    final DateTime date = widget.date;
+    String servicedate = '${date.day}/${date.month}/${date.year}';
+    _date = servicedate;
     _customerUser = widget.user;
   }
 
@@ -135,7 +137,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
                   style: TextStyle(color: Colors.black),
                 ),
           Text(
-            'serviceName Date: ${_date.toString()}',
+            'Date: $_date',
             style: const TextStyle(color: Colors.black),
           ),
           Text(
@@ -145,7 +147,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
         ],
       ),
       actions: [
-        CustomElevatedButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
             sendingNotification(_firestore, _user, _docname);
@@ -155,15 +157,12 @@ class _NotificationDialogState extends State<NotificationDialog> {
                 MaterialPageRoute(
                     builder: (context) => MyBookingsScreen(id: 'p')));
           },
-          height: 49.v,
-          text: "Accept",
-          margin: EdgeInsets.only(right: 6.h),
-          buttonStyle: CustomButtonStyles.none,
-          decoration: CustomButtonStyles
-              .gradientLightGreenAToOnPrimaryContainerDecoration,
-          buttonTextStyle: theme.textTheme.labelLarge!,
+          child: const Text(
+            'Accept',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
-        CustomElevatedButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
             setStatus('r');
@@ -172,12 +171,10 @@ class _NotificationDialogState extends State<NotificationDialog> {
                 MaterialPageRoute(
                     builder: (context) => MyBookingsScreen(id: 'r')));
           },
-          height: 49.v,
-          text: "Reject",
-          margin: EdgeInsets.only(left: 6.h),
-          buttonStyle: CustomButtonStyles.none,
-          decoration: CustomButtonStyles.gradientRedAToRedDecoration,
-          buttonTextStyle: theme.textTheme.labelLarge!,
+          child: const Text(
+            'Reject',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
       ],
     );

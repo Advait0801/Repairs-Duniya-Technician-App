@@ -30,7 +30,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   User? _user;
   LatLng? _currentPosition;
   bool showHalfPage = false;
-  List<dynamic> recentBookings = [];
+  List<CompletedWidget> recentBookings = [];
 
   @override
   void initState() {
@@ -173,17 +173,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
               serviceName: documentSnapshot['serviceName'],
               date: date,
             ));
-          } else if (documentSnapshot['status'] == 'r') {
-            recentBookings.add(DeclineWidget(
-              phone: documentSnapshot['customerPhone'],
-              timing: documentSnapshot['urgentBooking'] == true
-                  ? 'Urgent Booking'
-                  : documentSnapshot['timeIndex'],
-              time: time,
-              serviceName: documentSnapshot['serviceName'],
-              address: documentSnapshot['customerAddress'],
-              date: date,
-            ));
           }
         }
       }
@@ -239,7 +228,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                           ),
                         ),
                         SizedBox(height: 26.v),
-                        // _buildUserProfileList(context),
+                        _buildUserProfileList(context),
                       ],
                     ),
                   ),
@@ -369,34 +358,33 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   }
 
   // Section Widget
-  // Widget _buildUserProfileList(BuildContext context) {
-  //   return Expanded(
-  //     child: Padding(
-  //       padding: EdgeInsets.symmetric(horizontal: 9.h),
-  //       child: ListView.separated(
-  //         physics: const BouncingScrollPhysics(),
-  //         shrinkWrap: true,
-  //         separatorBuilder: (
-  //           context,
-  //           index,
-  //         ) {
-  //           return SizedBox(
-  //             height: 16.v,
-  //           );
-  //         },
-  //         itemCount: recentBookings.length,
-  //         itemBuilder: (context, index) {
-  //           return UserprofilesectionItemWidget(
-  //             date: recentBookings[index].date,
-  //             service: recentBookings[index].service,
-  //             timing: recentBookings[index].timing,
-  //             phone: recentBookings[index].phone,
-  //             address: recentBookings[index].address,
-  //             time: recentBookings[index].time,
-  //           );
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _buildUserProfileList(BuildContext context) {
+    return Expanded(
+      child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 9.h),
+          child: ListView.separated(
+            physics: const BouncingScrollPhysics(),
+            shrinkWrap: true,
+            separatorBuilder: (
+              context,
+              index,
+            ) {
+              return SizedBox(
+                height: 16.v,
+              );
+            },
+            itemCount: recentBookings.length,
+            itemBuilder: (context, index) {
+              return CompletedWidget(
+                phone: recentBookings[index].phone,
+                address: recentBookings[index].address,
+                time: recentBookings[index].time,
+                timing: recentBookings[index].timing,
+                serviceName: recentBookings[index].serviceName,
+                date: recentBookings[index].date,
+              );
+            },
+          )),
+    );
+  }
 }
