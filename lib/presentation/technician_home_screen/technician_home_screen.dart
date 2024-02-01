@@ -6,9 +6,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:technician_app/notification.dart';
-import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/technician_home_screen/notifications_display.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/completed_widget.dart';
@@ -193,6 +194,34 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     }
   }
 
+  Future<List<String>> fetchNotificationsFromFirestore() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('notifications')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      List<String> notifications =
+          querySnapshot.docs.map((doc) => doc['message'].toString()).toList();
+      return notifications;
+    } catch (error) {
+      log('Error fetching notifications from Firestore: $error');
+      return [];
+    }
+  }
+
+  Future<void> openNotifications(BuildContext context) async {
+    List<String> notifications = await fetchNotificationsFromFirestore();
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                NotificationsScreen(notifications: notifications)));
+  }
+
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -228,7 +257,14 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                           ),
                         ),
                         SizedBox(height: 26.v),
-                        _buildUserProfileList(context),
+                        recentBookings.isNotEmpty
+                            ? _buildUserProfileList(context)
+                            : const Center(
+                                child: Text(
+                                  'No recent bookings yet...',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
                       ],
                     ),
                   ),
@@ -287,11 +323,16 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                   ),
                 ),
               ),
-              AppbarTrailingImage(
-                imagePath: ImageConstant.imgGroup5139931,
-                margin: EdgeInsets.only(
-                  left: 24.h,
-                  right: 46.h,
+              GestureDetector(
+                onTap: () {
+                  openNotifications(context);
+                },
+                child: AppbarTrailingImage(
+                  imagePath: ImageConstant.imgGroup5139931,
+                  margin: EdgeInsets.only(
+                    left: 24.h,
+                    right: 46.h,
+                  ),
                 ),
               ),
             ],
@@ -361,30 +402,31 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   Widget _buildUserProfileList(BuildContext context) {
     return Expanded(
       child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 9.h),
-          child: ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            shrinkWrap: true,
-            separatorBuilder: (
-              context,
-              index,
-            ) {
-              return SizedBox(
-                height: 16.v,
-              );
-            },
-            itemCount: recentBookings.length,
-            itemBuilder: (context, index) {
-              return CompletedWidget(
-                phone: recentBookings[index].phone,
-                address: recentBookings[index].address,
-                time: recentBookings[index].time,
-                timing: recentBookings[index].timing,
-                serviceName: recentBookings[index].serviceName,
-                date: recentBookings[index].date,
-              );
-            },
-          )),
+        padding: EdgeInsets.symmetric(horizontal: 9.h),
+        child: ListView.separated(
+          physics: const BouncingScrollPhysics(),
+          shrinkWrap: true,
+          separatorBuilder: (
+            context,
+            index,
+          ) {
+            return SizedBox(
+              height: 16.v,
+            );
+          },
+          itemCount: recentBookings.length,
+          itemBuilder: (context, index) {
+            return CompletedWidget(
+              phone: recentBookings[index].phone,
+              address: recentBookings[index].address,
+              time: recentBookings[index].time,
+              timing: recentBookings[index].timing,
+              serviceName: recentBookings[index].serviceName,
+              date: recentBookings[index].date,
+            );
+          },
+        ),
+      ),
     );
   }
 }

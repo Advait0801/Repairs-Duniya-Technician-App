@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
-import 'package:technician_app/presentation/profile_screen/profile_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/notifications_display.dart';
+import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/completed_widget.dart';
@@ -182,6 +183,34 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     });
   }
 
+  Future<List<String>> fetchNotificationsFromFirestore() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .collection('notifications')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      List<String> notifications =
+          querySnapshot.docs.map((doc) => doc['message'].toString()).toList();
+      return notifications;
+    } catch (error) {
+      log('Error fetching notifications from Firestore: $error');
+      return [];
+    }
+  }
+
+  Future<void> openNotifications(BuildContext context) async {
+    List<String> notifications = await fetchNotificationsFromFirestore();
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                NotificationsScreen(notifications: notifications)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -266,11 +295,16 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   ),
                 ),
               ),
-              AppbarTrailingImage(
-                imagePath: ImageConstant.imgGroup5139931,
-                margin: EdgeInsets.only(
-                  left: 24.h,
-                  right: 46.h,
+              GestureDetector(
+                onTap: () {
+                  openNotifications(context);
+                },
+                child: AppbarTrailingImage(
+                  imagePath: ImageConstant.imgGroup5139931,
+                  margin: EdgeInsets.only(
+                    left: 24.h,
+                    right: 46.h,
+                  ),
                 ),
               ),
             ],

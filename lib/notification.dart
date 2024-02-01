@@ -115,24 +115,36 @@ class PushNotificationSystem {
               timing = 'Evening';
             }
 
-            await _firestore
-                .collection('technicians')
-                .doc(_user!.uid)
-                .collection('serviceList')
-                .doc(documentName)
-                .set({
-              'jobAcceptance': job,
-              'timeIndex': timing,
-              'date': date,
-              'serviceName': service,
-              'serviceId': documentName,
-              'customerPhone': phoneNumber,
-              'urgentBooking': urgentBooking,
-              'customerAddress': address,
-              'customerId': user,
-              'customerTokenId': customerTokenId,
-              'status': 'p',
-            }, SetOptions(merge: true));
+            if (currentTime.difference(bookingTime) <=
+                const Duration(minutes: 3)) {
+              await _firestore
+                  .collection('technicians')
+                  .doc(_user!.uid)
+                  .collection('serviceList')
+                  .doc(documentName)
+                  .set({
+                'jobAcceptance': job,
+                'timeIndex': timing,
+                'date': date,
+                'serviceName': service,
+                'serviceId': documentName,
+                'customerPhone': phoneNumber,
+                'urgentBooking': urgentBooking,
+                'customerAddress': address,
+                'customerId': user,
+                'customerTokenId': customerTokenId,
+                'status': 'p',
+              }, SetOptions(merge: true));
+
+              await _firestore
+                  .collection('technicians')
+                  .doc(_user!.uid)
+                  .collection('notifications')
+                  .add({
+                'message': 'You have received a new service from $phoneNumber',
+                'timestamp': FieldValue.serverTimestamp()
+              });
+            }
 
             Navigator.pushAndRemoveUntil(
                 context,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/help_support.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 
@@ -69,6 +70,11 @@ class HalfPage extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => MyBookingsScreen(id: 'p')));
+        } else if (name == 'Contact') {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const HelpSupportScreen()));
         }
       },
       child: Column(

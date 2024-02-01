@@ -27,7 +27,7 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
-  bool isLoaded = false;
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -50,20 +50,25 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
 
   Future<void> _uploadFiles() async {
     try {
+      setState(() {
+        isUploading = true;
+      });
       await _uploadFile(imageIDFrontPath!, 'front');
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');
-      setState(() {
-        isLoaded = true;
-      });
-      isLoaded
-          ? Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const VerificationCompleteScreen()))
-          : CircularProgressIndicator();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const VerificationCompleteScreen(),
+        ),
+      );
     } catch (e) {
       log("Failed to upload files: $e");
+    } finally {
+      setState(() {
+        isUploading = false;
+      });
     }
   }
 
@@ -150,123 +155,125 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
-        body: Container(
-          width: mediaQueryData.size.width,
-          height: mediaQueryData.size.height,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: const Alignment(0.5, 0),
-              end: const Alignment(0.5, 1),
-              colors: [
-                theme.colorScheme.onError,
-                appTheme.gray50,
-              ],
-            ),
-          ),
-          child: Container(
-            width: double.maxFinite,
-            padding: EdgeInsets.only(
-              left: 23.h,
-              top: 111.v,
-              right: 23.h,
-            ),
-            child: Column(
-              children: [
-                CustomImageView(
-                  imagePath: ImageConstant.imgImage71,
-                  height: 117.v,
-                  width: 138.h,
-                ),
-                SizedBox(height: 24.v),
-                Text(
-                  "ID Verification",
-                  style: theme.textTheme.headlineSmall,
-                ),
-                SizedBox(height: 11.v),
-                SizedBox(
-                  width: 188.h,
-                  child: Text(
-                    "Please upload necessary Images",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodyLarge!.copyWith(
-                      height: 1.50,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 29.v),
-                _buildIdVerificationFrame(context),
-                SizedBox(height: 8.v),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 34.h,
-                    right: 40.h,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        "ID Front",
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      SizedBox(
-                        width: mediaQueryData.size.width * 0.2,
-                      ),
-                      Text(
-                        "ID Back",
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      SizedBox(
-                        width: mediaQueryData.size.width * 0.2,
-                      ),
-                      Text(
-                        "Selfie",
-                        style: theme.textTheme.bodySmall,
-                      ),
+        body: isUploading == true
+            ? const Center(child: CircularProgressIndicator())
+            : Container(
+                width: mediaQueryData.size.width,
+                height: mediaQueryData.size.height,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: const Alignment(0.5, 0),
+                    end: const Alignment(0.5, 1),
+                    colors: [
+                      theme.colorScheme.onError,
+                      appTheme.gray50,
                     ],
                   ),
                 ),
-                SizedBox(height: 36.v),
-                flag == true
-                    ? CustomElevatedButton(
-                        buttonStyle: const ButtonStyle(
-                            backgroundColor:
-                                MaterialStatePropertyAll(Colors.black)),
-                        text: "Verify",
-                        onPressed: () {
-                          _uploadFiles();
-                        },
-                      )
-                    : CustomElevatedButton(
-                        text: "Verify",
+                child: Container(
+                  width: double.maxFinite,
+                  padding: EdgeInsets.only(
+                    left: 23.h,
+                    top: 111.v,
+                    right: 23.h,
+                  ),
+                  child: Column(
+                    children: [
+                      CustomImageView(
+                        imagePath: ImageConstant.imgImage71,
+                        height: 117.v,
+                        width: 138.h,
                       ),
-                SizedBox(height: 32.v),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomImageView(
-                      imagePath: ImageConstant.imgArrowLeft,
-                      height: 20.adaptSize,
-                      width: 20.adaptSize,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.h),
-                      child: TextButton(
-                        onPressed: (() => Navigator.pop(context)),
+                      SizedBox(height: 24.v),
+                      Text(
+                        "ID Verification",
+                        style: theme.textTheme.headlineSmall,
+                      ),
+                      SizedBox(height: 11.v),
+                      SizedBox(
+                        width: 188.h,
                         child: Text(
-                          'Back',
-                          style: CustomTextStyles.titleSmallBluegray700,
+                          "Please upload necessary Images",
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge!.copyWith(
+                            height: 1.50,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 29.v),
+                      _buildIdVerificationFrame(context),
+                      SizedBox(height: 8.v),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 34.h,
+                          right: 40.h,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              "ID Front",
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            SizedBox(
+                              width: mediaQueryData.size.width * 0.2,
+                            ),
+                            Text(
+                              "ID Back",
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            SizedBox(
+                              width: mediaQueryData.size.width * 0.2,
+                            ),
+                            Text(
+                              "Selfie",
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 36.v),
+                      flag == true
+                          ? CustomElevatedButton(
+                              buttonStyle: const ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStatePropertyAll(Colors.black)),
+                              text: "Verify",
+                              onPressed: () {
+                                _uploadFiles();
+                              },
+                            )
+                          : CustomElevatedButton(
+                              text: "Verify",
+                            ),
+                      SizedBox(height: 32.v),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CustomImageView(
+                            imagePath: ImageConstant.imgArrowLeft,
+                            height: 20.adaptSize,
+                            width: 20.adaptSize,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 8.h),
+                            child: TextButton(
+                              onPressed: (() => Navigator.pop(context)),
+                              child: Text(
+                                'Back',
+                                style: CustomTextStyles.titleSmallBluegray700,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5.v),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 5.v),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }

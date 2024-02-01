@@ -1,5 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, prefer_final_fields, avoid_init_to_null, unused_local_variable, unused_field, prefer_const_declarations
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,6 +24,8 @@ class ConfirmLocationScreen extends StatefulWidget {
 }
 
 class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
+  Completer<GoogleMapController> _mapController =
+      Completer<GoogleMapController>();
   final List<String> codes = [
     '516001',
     '516002',
@@ -124,6 +127,45 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     }
   }
 
+  Future<void> _updateMarkerPosition(LatLng newPosition) async {
+    try {
+      setState(() {
+        _currentPosition = newPosition;
+      });
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        newPosition.latitude,
+        newPosition.longitude,
+      );
+
+      Placemark place = placemarks[0];
+
+      setState(() {
+        _currentAddress =
+            '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+        _postalCode = place.postalCode!;
+      });
+    } catch (e) {
+      log('Error in updateposition: $e');
+    }
+  }
+
+  Future<void> _updateCameraPosition(GoogleMapController controller) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    LatLngBounds visibleRegion = await controller.getVisibleRegion();
+    LatLng center = LatLng(
+      (visibleRegion.southwest.latitude + visibleRegion.northeast.latitude) / 2,
+      (visibleRegion.southwest.longitude + visibleRegion.northeast.longitude) /
+          2,
+    );
+
+    setState(() {
+      _currentPosition = center;
+    });
+    await _updateMarkerPosition(center);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -158,11 +200,26 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                               zoom: 13,
                             ),
                             zoomControlsEnabled: false,
+                            onMapCreated: (GoogleMapController controller) {
+                              _mapController.complete(controller);
+                              _updateCameraPosition(controller);
+                            },
                             markers: {
                               Marker(
-                                  markerId: const MarkerId('currentLcoation'),
-                                  icon: BitmapDescriptor.defaultMarker,
-                                  position: _currentPosition!)
+                                markerId: const MarkerId('currentLcoation'),
+                                icon: BitmapDescriptor.defaultMarker,
+                                position: _currentPosition!,
+                                draggable: true,
+                                onDragEnd: (LatLng newPosition) {
+                                  _updateMarkerPosition(newPosition);
+                                },
+                              )
+                            },
+                            onCameraMove: (CameraPosition position) {},
+                            onCameraIdle: () async {
+                              final GoogleMapController controller =
+                                  await _mapController.future;
+                              _updateCameraPosition(controller);
                             },
                           ),
                   ),
