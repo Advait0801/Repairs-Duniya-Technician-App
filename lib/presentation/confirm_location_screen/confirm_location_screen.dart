@@ -151,8 +151,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   }
 
   Future<void> _updateCameraPosition(GoogleMapController controller) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
     LatLngBounds visibleRegion = await controller.getVisibleRegion();
     LatLng center = LatLng(
       (visibleRegion.southwest.latitude + visibleRegion.northeast.latitude) / 2,
@@ -237,12 +235,19 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                         onTap: () async {
                           List<Location> l = await locationFromAddress(
                               _placesList[index]['description']);
+                          final GoogleMapController controller =
+                              await _mapController.future;
+                          double zoomLevel = 15.0;
                           LatLng latLng =
                               LatLng(l.last.latitude, l.last.longitude);
                           List<Placemark> places =
                               await placemarkFromCoordinates(
                                   latLng.latitude, latLng.longitude);
                           Placemark place = places[0];
+                          controller.animateCamera(CameraUpdate.newLatLngZoom(
+                            LatLng(latLng.latitude!, latLng.longitude!),
+                            zoomLevel,
+                          ));
                           setState(() {
                             _currentPosition = latLng;
                             _currentAddress =

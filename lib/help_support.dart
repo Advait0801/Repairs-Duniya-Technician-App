@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -21,7 +22,11 @@ class HelpSupportScreen extends StatelessWidget {
             color: Colors.white,
             iconSize: MediaQuery.of(context).size.width * 0.08,
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TechnicianHomeScreen()),
+                  (route) => false);
             },
           ),
         ),

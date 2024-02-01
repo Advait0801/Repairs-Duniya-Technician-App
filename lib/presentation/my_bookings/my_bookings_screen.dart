@@ -178,6 +178,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
   void _hideHalfPage(BuildContext context) {
     // Update the state or perform other actions as needed
+    Navigator.of(context).pop();
     setState(() {
       showHalfPage = false;
     });
@@ -330,32 +331,26 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               children: [
                 CustomImageView(
                   imagePath: ImageConstant.imgEllipse13,
-                  height: 45.adaptSize,
-                  width: 45.adaptSize,
-                  radius: BorderRadius.circular(22.h),
+                  height: 60.adaptSize,
+                  width: 60.adaptSize,
+                  radius: BorderRadius.circular(25.h),
                 ),
                 SizedBox(height: 10.v),
                 SizedBox(
                   width: 166.h,
                   child: Text(
-                    "To get more works subscribe to our gold plan",
+                    "Get works around from you...",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: appTheme.gray80001,
-                      fontSize: 12.fSize,
+                      fontSize: 15.fSize,
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
                 SizedBox(height: 8.v),
-                CustomElevatedButton(
-                  height: 36.v,
-                  width: 157.h,
-                  text: "Subscribe",
-                  buttonStyle: CustomButtonStyles.outlinePrimaryTL13,
-                )
               ],
             ),
           ),

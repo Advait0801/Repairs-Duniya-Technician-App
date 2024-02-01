@@ -257,14 +257,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                           ),
                         ),
                         SizedBox(height: 26.v),
-                        recentBookings.isNotEmpty
-                            ? _buildUserProfileList(context)
-                            : const Center(
-                                child: Text(
-                                  'No recent bookings yet...',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
+                        _buildUserProfileList(context),
                       ],
                     ),
                   ),
@@ -358,32 +351,26 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
               children: [
                 CustomImageView(
                   imagePath: ImageConstant.imgEllipse13,
-                  height: 45.adaptSize,
-                  width: 45.adaptSize,
-                  radius: BorderRadius.circular(22.h),
+                  height: 60.adaptSize,
+                  width: 60.adaptSize,
+                  radius: BorderRadius.circular(25.h),
                 ),
-                SizedBox(height: 10.v),
+                SizedBox(height: 20.v),
                 SizedBox(
                   width: 166.h,
                   child: Text(
-                    "To get more works subscribe to our gold plan",
+                    "Get works around from you....",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: appTheme.gray80001,
-                      fontSize: 12.fSize,
+                      fontSize: 15.fSize,
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
                 SizedBox(height: 8.v),
-                CustomElevatedButton(
-                  height: 36.v,
-                  width: 157.h,
-                  text: "Subscribe",
-                  buttonStyle: CustomButtonStyles.outlinePrimaryTL13,
-                )
               ],
             ),
           ),
@@ -400,33 +387,45 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
 
   // Section Widget
   Widget _buildUserProfileList(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 9.h),
-        child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (
-            context,
-            index,
-          ) {
-            return SizedBox(
-              height: 16.v,
-            );
-          },
-          itemCount: recentBookings.length,
-          itemBuilder: (context, index) {
-            return CompletedWidget(
-              phone: recentBookings[index].phone,
-              address: recentBookings[index].address,
-              time: recentBookings[index].time,
-              timing: recentBookings[index].timing,
-              serviceName: recentBookings[index].serviceName,
-              date: recentBookings[index].date,
-            );
-          },
-        ),
-      ),
-    );
+    return recentBookings.isNotEmpty
+        ? Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 9.h),
+              child: ListView.separated(
+                physics: const BouncingScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (
+                  context,
+                  index,
+                ) {
+                  return SizedBox(
+                    height: 16.v,
+                  );
+                },
+                itemCount: recentBookings.length,
+                itemBuilder: (context, index) {
+                  return CompletedWidget(
+                    phone: recentBookings[index].phone,
+                    address: recentBookings[index].address,
+                    time: recentBookings[index].time,
+                    timing: recentBookings[index].timing,
+                    serviceName: recentBookings[index].serviceName,
+                    date: recentBookings[index].date,
+                  );
+                },
+              ),
+            ),
+          )
+        : Column(
+            children: [
+              SizedBox(
+                height: 230.v,
+              ),
+              Text(
+                'No bookings yet...',
+                style: TextStyle(color: Colors.black, fontSize: 20.fSize),
+              ),
+            ],
+          );
   }
 }
