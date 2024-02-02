@@ -12,6 +12,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
+import 'package:technician_app/widgets/custom_outlined_button.dart';
 import 'package:technician_app/widgets/custom_text_form_field.dart';
 import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
@@ -33,6 +34,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     '516004',
     '560076',
     '560102',
+    '560068',
   ];
   LatLng? _currentPosition = null;
   String _postalCode = '';
@@ -197,61 +199,68 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       child: Scaffold(
         body: _controller.text.isEmpty
             ? Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _buildPickALocationFrame(context),
-                  Expanded(
-                    child: _currentPosition == null
-                        ? const Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : GoogleMap(
-                            initialCameraPosition: CameraPosition(
-                              target: _currentPosition!,
-                              zoom: 13,
-                            ),
-                            zoomControlsEnabled: false,
-                            onMapCreated: (GoogleMapController controller) {
-                              _mapController.complete(controller);
-                              _updateCameraPosition(controller);
-                            },
-                            markers: {
-                              Marker(
-                                markerId: const MarkerId('currentLocation'),
-                                icon: BitmapDescriptor.defaultMarker,
-                                position: _currentPosition!,
-                                draggable: true,
-                                onDragEnd: (LatLng newPosition) {
-                                  _updateMarkerPosition(newPosition);
-                                },
+                  SizedBox(
+                    height: 455.h,
+                    width: double.maxFinite,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        _currentPosition == null
+                            ? const Center(
+                                child: CircularProgressIndicator(),
                               )
-                            },
-                            onCameraMove: (CameraPosition position) {
-                              setState(() {
-                                _currentPosition = position.target;
-                              });
-                            },
-                            onCameraIdle: () async {
-                              final GoogleMapController controller =
-                                  await _mapController.future;
-                              _updateCameraPosition(controller);
-                            },
-                            onTap: (LatLng tappedPoint) {
-                              _updateMarkerPosition(tappedPoint);
-                            },
+                            : GoogleMap(
+                                initialCameraPosition: CameraPosition(
+                                  target: _currentPosition!,
+                                  zoom: 13,
+                                ),
+                                zoomControlsEnabled: false,
+                                onMapCreated: (GoogleMapController controller) {
+                                  _mapController.complete(controller);
+                                  _updateCameraPosition(controller);
+                                },
+                                markers: {
+                                  Marker(
+                                    markerId: const MarkerId('currentLocation'),
+                                    icon: BitmapDescriptor.defaultMarker,
+                                    position: _currentPosition!,
+                                    draggable: true,
+                                    onDragEnd: (LatLng newPosition) {
+                                      _updateMarkerPosition(newPosition);
+                                    },
+                                  )
+                                },
+                                onCameraMove: (CameraPosition position) {
+                                  setState(() {
+                                    _currentPosition = position.target;
+                                  });
+                                },
+                                onCameraIdle: () async {
+                                  final GoogleMapController controller =
+                                      await _mapController.future;
+                                  _updateCameraPosition(controller);
+                                },
+                                onTap: (LatLng tappedPoint) {
+                                  _updateMarkerPosition(tappedPoint);
+                                },
+                              ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                left: 76.h, right: 76.h, bottom: 9.v),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildUseMyCurrentLocation(context),
+                              ],
+                            ),
                           ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
-                    child: CustomElevatedButton(
-                      text: 'Use my Current Location',
-                      buttonStyle: CustomButtonStyles.none,
-                      decoration:
-                          CustomButtonStyles.gradientPrimaryToGrayDecoration,
-                      onPressed: () {
-                        getUsersCurrentLocation();
-                      },
+                        ),
+                      ],
                     ),
                   ),
                   _buildConfirmLocationFrame(context)
@@ -305,6 +314,23 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   }
 
   /// Section Widget
+  Widget _buildUseMyCurrentLocation(BuildContext context) {
+    return CustomOutlinedButton(
+        text: "Use my Current Location",
+        leftIcon: Container(
+          margin: EdgeInsets.only(right: 8.h),
+          child: CustomImageView(
+            imagePath: ImageConstant.imgVector,
+            height: 22.v,
+            width: 20.h,
+          ),
+        ),
+        textStyle: TextStyle(color: Colors.black, fontSize: 20.v),
+        onPressed: () {
+          getUsersCurrentLocation();
+        });
+  }
+
   Widget _buildPickALocationFrame(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(

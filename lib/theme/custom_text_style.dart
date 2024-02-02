@@ -97,6 +97,11 @@ class CustomTextStyles {
   static get bodySmallGray800 => theme.textTheme.bodySmall!.copyWith(
         color: appTheme.gray800,
       );
+  static get titleSmallOpenSansOnError =>
+      theme.textTheme.titleSmall!.openSans.copyWith(
+        color: theme.colorScheme.onError,
+        fontWeight: FontWeight.w700,
+      );
 }
 
 extension on TextStyle {

@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
-    //home: const ServiceSelectionScreen());
   }
 
   Future<bool> checkLoginStatus() async {
