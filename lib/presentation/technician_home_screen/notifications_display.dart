@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:technician_app/core/app_export.dart';
 
 class NotificationsScreen extends StatefulWidget {
   final List<String> notifications;
@@ -57,6 +58,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             return Text('Error: ${snapshot.error}');
           } else {
             List<String> notifications = snapshot.data ?? [];
+            if (notifications.isEmpty) {
+              return Center(
+                child: Text(
+                  'No notifications yet..',
+                  style: TextStyle(color: Colors.black, fontSize: 20.fSize),
+                ),
+              );
+            }
             return ListView.builder(
               itemCount: notifications.length,
               itemBuilder: (context, index) {

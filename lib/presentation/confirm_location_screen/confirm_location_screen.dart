@@ -95,7 +95,11 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       });
     }
 
-    getSuggestion(_controller.text);
+    try {
+      getSuggestion(_controller.text);
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
   void getSuggestion(String s) async {
@@ -106,6 +110,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     if (response.statusCode == 200) {
       setState(() {
         _placesList = jsonDecode(response.body.toString())['predictions'];
+        log(_placesList.toString());
       });
     } else {
       throw Exception('Failed........');
@@ -212,7 +217,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                             },
                             markers: {
                               Marker(
-                                markerId: const MarkerId('currentLcoation'),
+                                markerId: const MarkerId('currentLocation'),
                                 icon: BitmapDescriptor.defaultMarker,
                                 position: _currentPosition!,
                                 draggable: true,
@@ -221,11 +226,18 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                                 },
                               )
                             },
-                            onCameraMove: (CameraPosition position) {},
+                            onCameraMove: (CameraPosition position) {
+                              setState(() {
+                                _currentPosition = position.target;
+                              });
+                            },
                             onCameraIdle: () async {
                               final GoogleMapController controller =
                                   await _mapController.future;
                               _updateCameraPosition(controller);
+                            },
+                            onTap: (LatLng tappedPoint) {
+                              _updateMarkerPosition(tappedPoint);
                             },
                           ),
                   ),
@@ -256,19 +268,21 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                         onTap: () async {
                           List<Location> l = await locationFromAddress(
                               _placesList[index]['description']);
-                          final GoogleMapController controller =
-                              await _mapController.future;
-                          double zoomLevel = 15.0;
                           LatLng latLng =
                               LatLng(l.last.latitude, l.last.longitude);
                           List<Placemark> places =
                               await placemarkFromCoordinates(
                                   latLng.latitude, latLng.longitude);
                           Placemark place = places[0];
+
+                          final GoogleMapController controller =
+                              await _mapController.future;
+                          double zoomLevel = 13;
                           controller.animateCamera(CameraUpdate.newLatLngZoom(
-                            LatLng(latLng.latitude!, latLng.longitude!),
+                            LatLng(latLng.latitude, latLng.longitude),
                             zoomLevel,
                           ));
+
                           setState(() {
                             _currentPosition = latLng;
                             _currentAddress =

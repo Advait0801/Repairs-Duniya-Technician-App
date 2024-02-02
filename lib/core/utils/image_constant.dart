@@ -75,5 +75,17 @@ class ImageConstant {
 
   static String imgImage89 = '$imagePath/img_image_89.png';
 
+  static String electrician = '$imagePath/electrician.jpg';
+
+  static String painter = '$imagePath/painter.jpg';
+
+  static String aircooler = '$imagePath/air_cooler.jpg';
+
+  static String construction = '$imagePath/construction.jpg';
+
+  static String geyser = '$imagePath/geyser.jpg';
+
+  static String microwave = '$imagePath/microwave.jpg';
+
   static String imageNotFound = 'assets/images/image_not_found.png';
 }

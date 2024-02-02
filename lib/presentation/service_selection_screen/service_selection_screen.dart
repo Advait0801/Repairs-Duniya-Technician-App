@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,29 +7,44 @@ import 'package:technician_app/presentation/technician_home_screen/technician_ho
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class ServiceSelectionScreen extends StatefulWidget {
-  const ServiceSelectionScreen({super.key});
+  const ServiceSelectionScreen({Key? key}) : super(key: key);
 
   @override
   State<ServiceSelectionScreen> createState() => _ServiceSelectionScreenState();
 }
 
 class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
-  bool flag1 = false;
-  bool flag2 = false;
-  bool flag3 = false;
-  bool flag4 = false;
-  bool flag5 = false;
-  bool flag = false;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
   List<String> services = [];
-  List<String> extraServices = [
+  bool flag = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Map<String, String> serviceImages = {
+    'AC Repair': ImageConstant.imgImage38,
+    'Fridge Repair': ImageConstant.imgImage34,
+    'Plumber': ImageConstant.imgImage83,
+    'Electrician': ImageConstant.electrician,
+    'Geyser': ImageConstant.geyser,
+    'Air Cooler': ImageConstant.aircooler,
+    'MicroWave/Oven': ImageConstant.microwave,
+    'Painter': ImageConstant.painter,
+    'Construction/Renovation': ImageConstant.construction,
+    'Washing Machine Repair': ImageConstant.imgImage31,
+  };
+
+  List<String> servicesList = [
+    'AC Repair',
+    'Fridge Repair',
+    'Plumber',
+    'Electrician',
     'Geyser',
     'Air Cooler',
-    'MicroWave/Oven'
-        'Painter',
-    'CCTV'
+    'MicroWave/Oven',
+    'Painter',
+    'Construction/Renovation',
+    'Washing Machine Repair',
   ];
 
   @override
@@ -43,21 +57,19 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     });
   }
 
-  bool getValue() {
-    if (flag1 || flag2 || flag3 || flag4 || flag5) {
-      return true;
-    }
-    return false;
+  void toggleService(String serviceName) {
+    setState(() {
+      if (services.contains(serviceName)) {
+        services.remove(serviceName);
+      } else {
+        services.add(serviceName);
+      }
+      flag = services.isNotEmpty;
+    });
   }
 
   Future<void> uploadServices() async {
     try {
-      if (flag1) services.add('AC');
-      if (flag2) services.add('Fridge');
-      if (flag3) services.add('Washing Machine');
-      if (flag4) services.add('Plumber');
-      if (flag5) services.add('Electrician');
-
       await _firestore.collection('technicians').doc(_user!.uid).set(
         {'services': FieldValue.arrayUnion(services)},
         SetOptions(merge: true),
@@ -74,15 +86,13 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    mediaQueryData = MediaQuery.of(context);
-
     return SafeArea(
       child: Scaffold(
         extendBody: true,
         extendBodyBehindAppBar: true,
         body: Container(
-          width: mediaQueryData.size.width,
-          height: mediaQueryData.size.height,
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: const Alignment(0.5, 0),
@@ -117,9 +127,23 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
                   style: theme.textTheme.bodyLarge,
                 ),
                 SizedBox(height: 32.v),
-                _buildServiceSelectionRow1(context),
-                SizedBox(height: 12.v),
-                _buildServiceSelectionRow2(context),
+                Expanded(
+                  child: SingleChildScrollView(
+                    primary: false,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          bottom: 32.v), // Adjust spacing as needed
+                      child: Wrap(
+                        spacing: 8.0,
+                        runSpacing: 32.0,
+                        children: servicesList.map((serviceName) {
+                          return _buildServiceTile(serviceName);
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(height: 30.v),
                 CustomElevatedButton(
                   buttonStyle: flag == true
@@ -141,274 +165,42 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     );
   }
 
-  /// Section Widget
-  Widget _buildServiceSelectionRow1(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 1.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: 8.h,
-                bottom: 16.v,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 3.h,
-                      vertical: 37.v,
-                    ),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag1 == true
-                          ? const Color(0xFFCBCBCB)
-                          : Colors.white,
-                    ),
-                    child: CustomImageView(
-                      onTap: () {
-                        setState(() {
-                          flag1 = !flag1;
-                          flag = getValue();
-                        });
-                      },
-                      imagePath: ImageConstant.imgImage38,
-                      height: 37.v,
-                      width: 106.h,
-                      alignment: Alignment.topCenter,
-                    ),
-                  ),
-                  SizedBox(height: 1.v),
-                  Text(
-                    "AC Repair",
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 8.h,
-                right: 8.h,
-                bottom: 16.v,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.h,
-                      vertical: 7.v,
-                    ),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag2 == true
-                          ? const Color(0xFFCBCBCB)
-                          : Colors.white,
-                    ),
-                    child: CustomImageView(
-                      onTap: () {
-                        setState(() {
-                          flag2 = !flag2;
-                          flag = getValue();
-                        });
-                      },
-                      imagePath: ImageConstant.imgImage34,
-                      height: 98.v,
-                      width: 65.h,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                  SizedBox(height: 1.v),
-                  Text(
-                    "Fridge Repair",
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8.h),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(horizontal: 14.h),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag3 == true
-                          ? const Color(0xFFCBCBCB)
-                          : Colors.white,
-                    ),
-                    child: CustomImageView(
-                      onTap: () {
-                        setState(() {
-                          flag3 = !flag3;
-                          flag = getValue();
-                        });
-                      },
-                      imagePath: ImageConstant.imgImage31,
-                      height: 106.v,
-                      width: 86.h,
-                      alignment: Alignment.bottomCenter,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 99.h,
-                    child: Text(
-                      "Washing Machine Repair",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildServiceTile(String serviceName) {
+    bool isSelected = services.contains(serviceName);
+    String imagePath = serviceImages.containsKey(serviceName)
+        ? serviceImages[serviceName]!
+        : ImageConstant.imgMenu;
 
-  Widget _buildServiceSelectionRow2(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 1.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: 8.h,
-                bottom: 16.v,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 3.h,
-                      vertical: 37.v,
-                    ),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag4 == true
-                          ? const Color(0xFFCBCBCB)
-                          : Colors.white,
-                    ),
-                    child: CustomImageView(
-                      onTap: () {
-                        setState(() {
-                          flag4 = !flag4;
-                          flag = getValue();
-                        });
-                      },
-                      imagePath: ImageConstant.imgImage83,
-                      height: 85.v,
-                      width: 116.h,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                  SizedBox(height: 1.v),
-                  Text(
-                    "Plumber",
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
+    return Column(
+      children: [
+        Container(
+          height: 100.adaptSize,
+          width: 100.adaptSize,
+          padding: EdgeInsets.symmetric(
+            vertical: 10.v,
           ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: 8.h,
-                right: 8.h,
-                bottom: 16.v,
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.h,
-                      vertical: 7.v,
-                    ),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                      color: flag5 == true
-                          ? const Color(0xFFCBCBCB)
-                          : Colors.white,
-                    ),
-                    child: CustomImageView(
-                      onTap: () {
-                        setState(() {
-                          flag5 = !flag5;
-                          flag = getValue();
-                        });
-                      },
-                      imagePath: ImageConstant.imgImage78,
-                      height: 104.v,
-                      width: 94.h,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                  SizedBox(height: 1.v),
-                  Text(
-                    "Electrician",
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
+          decoration: AppDecoration.outlineBlueGrayE.copyWith(
+            borderRadius: BorderRadiusStyle.roundedBorder10,
+            color: isSelected ? const Color(0xFFCBCBCB) : Colors.white,
           ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 8.h),
-              child: Column(
-                children: [
-                  Container(
-                    height: 115.adaptSize,
-                    width: 115.adaptSize,
-                    padding: EdgeInsets.symmetric(horizontal: 14.h),
-                    decoration: AppDecoration.outlineBlueGrayE.copyWith(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                    ),
-                    child: CustomImageView(
-                      imagePath: ImageConstant.imgFrame5140235,
-                      height: 9.v,
-                      width: 55.h,
-                      alignment: Alignment.center,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  Text(
-                    "More",
-                    style: theme.textTheme.bodySmall,
-                  ),
-                ],
-              ),
-            ),
+          child: CustomImageView(
+            onTap: () {
+              toggleService(serviceName);
+            },
+            imagePath: imagePath,
+            height: 120.adaptSize,
+            width: 100.adaptSize,
+            alignment: Alignment.topCenter,
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: 5.v), // Adjust spacing as needed
+        Text(
+          serviceName,
+          style: theme.textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 8.v),
+      ],
     );
   }
 }

@@ -491,51 +491,69 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.only(left: 10.h, right: 7.h),
-        child: ListView.separated(
-          physics: const BouncingScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (context, index) {
-            return SizedBox(
-              height: 19.v,
-            );
-          },
-          itemCount: screenId == 'c'
-              ? completed.length
-              : screenId == 'p' || screenId == 's'
-                  ? pending.length
-                  : rejected.length,
-          itemBuilder: (context, index) {
-            if (screenId == 'c') {
-              return CompletedWidget(
-                time: completed[index].time,
-                timing: completed[index].timing,
-                serviceName: completed[index].serviceName,
-                phone: completed[index].phone,
-                address: completed[index].address,
-                date: completed[index].date,
-              );
-            } else if (screenId == 'p' || screenId == 's') {
-              return PendingWidget(
-                serviceName: pending[index].serviceName,
-                timing: pending[index].timing,
-                docName: pending[index].docName,
-                id: pending[index].id,
-                phone: pending[index].phone,
-                address: pending[index].address,
-                date: pending[index].date,
-              );
-            } else {
-              return DeclineWidget(
-                time: rejected[index].time,
-                timing: rejected[index].timing,
-                serviceName: rejected[index].serviceName,
-                phone: rejected[index].phone,
-                address: rejected[index].address,
-                date: rejected[index].date,
-              );
-            }
-          },
-        ),
+        child: (screenId == 'c' && completed.isEmpty) ||
+                ((screenId == 'p' || screenId == 's') && pending.isEmpty) ||
+                (screenId == 'r' && rejected.isEmpty)
+            ? Column(
+                children: [
+                  SizedBox(
+                    height: 230.v,
+                  ),
+                  Text(
+                    screenId == 'c'
+                        ? 'No completed bookings yet..'
+                        : screenId == 'r'
+                            ? 'No rejected bookings yet..'
+                            : 'No pending bookings yet',
+                    style: TextStyle(color: Colors.black, fontSize: 20.fSize),
+                  ),
+                ],
+              )
+            : ListView.separated(
+                physics: const BouncingScrollPhysics(),
+                shrinkWrap: true,
+                separatorBuilder: (context, index) {
+                  return SizedBox(
+                    height: 19.v,
+                  );
+                },
+                itemCount: screenId == 'c'
+                    ? completed.length
+                    : screenId == 'p' || screenId == 's'
+                        ? pending.length
+                        : rejected.length,
+                itemBuilder: (context, index) {
+                  if (screenId == 'c') {
+                    return CompletedWidget(
+                      time: completed[index].time,
+                      timing: completed[index].timing,
+                      serviceName: completed[index].serviceName,
+                      phone: completed[index].phone,
+                      address: completed[index].address,
+                      date: completed[index].date,
+                    );
+                  } else if (screenId == 'p' || screenId == 's') {
+                    return PendingWidget(
+                      serviceName: pending[index].serviceName,
+                      timing: pending[index].timing,
+                      docName: pending[index].docName,
+                      id: pending[index].id,
+                      phone: pending[index].phone,
+                      address: pending[index].address,
+                      date: pending[index].date,
+                    );
+                  } else {
+                    return DeclineWidget(
+                      time: rejected[index].time,
+                      timing: rejected[index].timing,
+                      serviceName: rejected[index].serviceName,
+                      phone: rejected[index].phone,
+                      address: rejected[index].address,
+                      date: rejected[index].date,
+                    );
+                  }
+                },
+              ),
       ),
     );
   }
