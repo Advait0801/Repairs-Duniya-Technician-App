@@ -80,6 +80,12 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
           '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
       _postalCode = place.postalCode!;
     });
+
+    final GoogleMapController controller = await _mapController.future;
+    controller.animateCamera(CameraUpdate.newLatLngZoom(
+      LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+      13,
+    ));
   }
 
   void onChange() {
@@ -139,6 +145,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       );
 
       Placemark place = placemarks[0];
+
+      final GoogleMapController controller = await _mapController.future;
 
       setState(() {
         _currentAddress =
@@ -220,6 +228,19 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                               _updateCameraPosition(controller);
                             },
                           ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 0),
+                    child: CustomElevatedButton(
+                      text: 'Use my Current Location',
+                      buttonStyle: CustomButtonStyles.none,
+                      decoration:
+                          CustomButtonStyles.gradientPrimaryToGrayDecoration,
+                      onPressed: () {
+                        getUsersCurrentLocation();
+                      },
+                    ),
                   ),
                   _buildConfirmLocationFrame(context)
                 ],
@@ -390,27 +411,27 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                 uploadLocation();
               } else {
                 showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          content: Text('Invalid pincode....',
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize:
-                                      MediaQuery.of(context).size.width * 0.1)),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                'OK',
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: mediaQueryData.size.width * 0.05),
-                              ),
-                            )
-                          ],
-                        ));
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    content: Text('Invalid pincode....',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: MediaQuery.of(context).size.width * 0.1)),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'OK',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: mediaQueryData.size.width * 0.05),
+                        ),
+                      )
+                    ],
+                  ),
+                );
               }
             },
             text: "Yes, that’s my location",
@@ -418,24 +439,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             decoration: CustomButtonStyles.gradientPrimaryToGrayDecoration,
           ),
           SizedBox(height: 19.v),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomImageView(
-                imagePath: ImageConstant.imgArrowLeft,
-                height: 20.adaptSize,
-                width: 20.adaptSize,
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.h),
-                child: Text(
-                  "Back",
-                  style: theme.textTheme.titleSmall,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 28.v),
         ],
       ),
     );

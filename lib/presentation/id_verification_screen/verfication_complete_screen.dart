@@ -56,19 +56,6 @@ class VerificationCompleteScreen extends StatelessWidget {
                       );
                     }),
                 SizedBox(height: 32.v),
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  CustomImageView(
-                      imagePath: ImageConstant.imgArrowLeft,
-                      height: 20.adaptSize,
-                      width: 20.adaptSize),
-                  Padding(
-                    padding: EdgeInsets.only(left: 8.h),
-                    child: TextButton(
-                      onPressed: (() => Navigator.pop(context)),
-                      child: Text("Back", style: theme.textTheme.titleSmall),
-                    ),
-                  )
-                ]),
                 SizedBox(height: 5.v)
               ],
             ),
