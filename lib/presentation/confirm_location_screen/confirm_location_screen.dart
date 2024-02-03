@@ -325,7 +325,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             width: 20.h,
           ),
         ),
-        textStyle: TextStyle(color: Colors.black, fontSize: 20.v),
+        textStyle: TextStyle(color: Colors.black, fontSize: 17.v),
         onPressed: () {
           getUsersCurrentLocation();
         });
@@ -387,10 +387,11 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 23.h,
-        vertical: 24.v,
+        vertical: 20.v,
       ),
       decoration: AppDecoration.gradientOnErrorToGray,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           CustomImageView(
             imagePath: ImageConstant.imgImage72,
@@ -478,7 +479,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientPrimaryToGrayDecoration,
           ),
-          SizedBox(height: 19.v),
         ],
       ),
     );
