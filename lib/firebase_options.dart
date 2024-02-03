@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA_AHTL-2qeXXF0S0EAoG_iCw1fs52jiQc',
-    appId: '1:897433509401:android:ded91b696b32b8a14e5488',
+    appId: '1:897433509401:android:72497bb396143d8d4e5488',
     messagingSenderId: '897433509401',
     projectId: 'repairs-duniya-a8ee0',
     databaseURL: 'https://repairs-duniya-a8ee0-default-rtdb.firebaseio.com',
@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBaMdGfshAZoJgwCAjEk0ZXW-EaqgZ-vVI',
-    appId: '1:897433509401:ios:c99a168cd91ae4324e5488',
+    appId: '1:897433509401:ios:599ecbba0e865aa24e5488',
     messagingSenderId: '897433509401',
     projectId: 'repairs-duniya-a8ee0',
     databaseURL: 'https://repairs-duniya-a8ee0-default-rtdb.firebaseio.com',

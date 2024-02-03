@@ -1,4 +1,4 @@
-package com.example.technician_app
+package com.repairsduniya.technician_app
 
 import io.flutter.embedding.android.FlutterActivity
 
