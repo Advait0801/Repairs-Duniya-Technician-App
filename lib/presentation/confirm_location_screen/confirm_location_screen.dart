@@ -83,11 +83,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     }
 
     _permission = await _location.hasPermission();
-    if (_permission == loc.PermissionStatus.granted) {
-      getUserLocation();
-      return;
-    }
-
     if (_permission == loc.PermissionStatus.denied) {
       _permission = await _location.requestPermission();
 
@@ -135,6 +130,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       return Future.error(
           'Location permissions are denied forever, cannot request permission');
     }
+
+    getUserLocation();
   }
 
   void onChange() {
@@ -235,6 +232,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       });
     });
     checkPermissions();
+    //getUserLocation();
     _controller.addListener(() {
       onChange();
     });
