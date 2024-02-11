@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
+import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
           }
         },
       ),
+      //home: const ConfirmLocationScreen(),
     );
   }
 

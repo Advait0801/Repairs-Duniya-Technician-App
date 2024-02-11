@@ -13,8 +13,6 @@ import 'package:technician_app/presentation/technician_home_screen/notifications
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/completed_widget.dart';
-import 'package:technician_app/widgets/custom_elevated_button.dart';
-import 'package:technician_app/widgets/decline_widget.dart';
 import 'package:technician_app/widgets/half_page.dart';
 
 class TechnicianHomeScreen extends StatefulWidget {

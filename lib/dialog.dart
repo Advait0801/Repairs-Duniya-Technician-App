@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
-import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class NotificationDialog extends StatefulWidget {
   final int remainingSeconds;

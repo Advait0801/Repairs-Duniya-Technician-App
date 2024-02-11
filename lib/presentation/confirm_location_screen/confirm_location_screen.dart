@@ -15,6 +15,8 @@ import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_outlined_button.dart';
 import 'package:technician_app/widgets/custom_text_form_field.dart';
 import 'package:uuid/uuid.dart';
+import 'package:location/location.dart' as loc;
+import 'package:permission_handler/permission_handler.dart' as handler;
 import 'package:http/http.dart' as http;
 
 class ConfirmLocationScreen extends StatefulWidget {
@@ -46,30 +48,9 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? _user;
+  loc.PermissionStatus _permission = loc.PermissionStatus.denied;
 
-  Future<void> getUsersCurrentLocation() async {
-    bool _serviceEnabled;
-    LocationPermission _permission;
-
-    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!_serviceEnabled) {
-      return Future.error('Location Services are disabled');
-    }
-
-    _permission = await Geolocator.checkPermission();
-    if (_permission == LocationPermission.denied) {
-      _permission = await Geolocator.requestPermission();
-
-      if (_permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (_permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are denied forever, cannot request permission');
-    }
-
+  Future<void> getUserLocation() async {
     Position _position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     List<Placemark> placemarks =
@@ -88,6 +69,72 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
       13,
     ));
+  }
+
+  Future<void> checkPermissions() async {
+    loc.Location _location = loc.Location();
+    bool _serviceEnabled = await _location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await _location.requestService();
+    }
+
+    if (!_serviceEnabled) {
+      return Future.error('Location Services not Enabled');
+    }
+
+    _permission = await _location.hasPermission();
+    if (_permission == loc.PermissionStatus.granted) {
+      getUserLocation();
+      return;
+    }
+
+    if (_permission == loc.PermissionStatus.denied) {
+      _permission = await _location.requestPermission();
+
+      if (_permission == loc.PermissionStatus.denied) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Text(
+                  "Repairs Duniya Partner would like to use this device's location for providing better service. Please allow this app to access location..",
+                  style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        _permission = loc.PermissionStatus.deniedForever;
+                      });
+                    },
+                    child: const Text(
+                      'Deny',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await handler.openAppSettings();
+                    },
+                    child: const Text(
+                      'Go to Settings',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                ],
+              );
+            });
+
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (_permission == loc.PermissionStatus.deniedForever) {
+      return Future.error(
+          'Location permissions are denied forever, cannot request permission');
+    }
   }
 
   void onChange() {
@@ -187,7 +234,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
         _user = user;
       });
     });
-    getUsersCurrentLocation();
+    checkPermissions();
     _controller.addListener(() {
       onChange();
     });
@@ -197,118 +244,128 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: _controller.text.isEmpty
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildPickALocationFrame(context),
-                  SizedBox(
-                    height: 455.h,
-                    width: double.maxFinite,
-                    child: Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        _currentPosition == null
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : GoogleMap(
-                                initialCameraPosition: CameraPosition(
-                                  target: _currentPosition!,
-                                  zoom: 13,
-                                ),
-                                zoomControlsEnabled: false,
-                                onMapCreated: (GoogleMapController controller) {
-                                  _mapController.complete(controller);
-                                  _updateCameraPosition(controller);
-                                },
-                                markers: {
-                                  Marker(
-                                    markerId: const MarkerId('currentLocation'),
-                                    icon: BitmapDescriptor.defaultMarker,
-                                    position: _currentPosition!,
-                                    draggable: true,
-                                    onDragEnd: (LatLng newPosition) {
-                                      _updateMarkerPosition(newPosition);
-                                    },
-                                  )
-                                },
-                                onCameraMove: (CameraPosition position) {
-                                  setState(() {
-                                    _currentPosition = position.target;
-                                  });
-                                },
-                                onCameraIdle: () async {
-                                  final GoogleMapController controller =
-                                      await _mapController.future;
-                                  _updateCameraPosition(controller);
-                                },
-                                onTap: (LatLng tappedPoint) {
-                                  _updateMarkerPosition(tappedPoint);
-                                },
-                              ),
-                        Align(
+        body: _permission == loc.PermissionStatus.deniedForever
+            ? AlertDialog(
+                content: Text(
+                  'Permission not given... App not working',
+                  style: CustomTextStyles.bodyMediumRed500,
+                ),
+              )
+            : _controller.text.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildPickALocationFrame(context),
+                      SizedBox(
+                        height: 455.h,
+                        width: double.maxFinite,
+                        child: Stack(
                           alignment: Alignment.bottomCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                                left: 76.h, right: 76.h, bottom: 9.v),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _buildUseMyCurrentLocation(context),
-                              ],
+                          children: [
+                            _currentPosition == null
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: _currentPosition!,
+                                      zoom: 13,
+                                    ),
+                                    zoomControlsEnabled: false,
+                                    onMapCreated:
+                                        (GoogleMapController controller) {
+                                      _mapController.complete(controller);
+                                      _updateCameraPosition(controller);
+                                    },
+                                    markers: {
+                                      Marker(
+                                        markerId:
+                                            const MarkerId('currentLocation'),
+                                        icon: BitmapDescriptor.defaultMarker,
+                                        position: _currentPosition!,
+                                        draggable: true,
+                                        onDragEnd: (LatLng newPosition) {
+                                          _updateMarkerPosition(newPosition);
+                                        },
+                                      )
+                                    },
+                                    onCameraMove: (CameraPosition position) {
+                                      setState(() {
+                                        _currentPosition = position.target;
+                                      });
+                                    },
+                                    onCameraIdle: () async {
+                                      final GoogleMapController controller =
+                                          await _mapController.future;
+                                      _updateCameraPosition(controller);
+                                    },
+                                    onTap: (LatLng tappedPoint) {
+                                      _updateMarkerPosition(tappedPoint);
+                                    },
+                                  ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: 76.h, right: 76.h, bottom: 9.v),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    _buildUseMyCurrentLocation(context),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _buildConfirmLocationFrame(context)
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildPickALocationFrame(context),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _placesList.length,
+                          itemBuilder: (context, index) => ListTile(
+                            onTap: () async {
+                              List<Location> l = await locationFromAddress(
+                                  _placesList[index]['description']);
+                              LatLng latLng =
+                                  LatLng(l.last.latitude, l.last.longitude);
+                              List<Placemark> places =
+                                  await placemarkFromCoordinates(
+                                      latLng.latitude, latLng.longitude);
+                              Placemark place = places[0];
+
+                              final GoogleMapController controller =
+                                  await _mapController.future;
+                              double zoomLevel = 13;
+                              controller
+                                  .animateCamera(CameraUpdate.newLatLngZoom(
+                                LatLng(latLng.latitude, latLng.longitude),
+                                zoomLevel,
+                              ));
+
+                              setState(() {
+                                _currentPosition = latLng;
+                                _currentAddress =
+                                    '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
+                                _postalCode = place.postalCode!;
+                              });
+                              _controller.clear();
+                            },
+                            title: Text(
+                              _placesList[index]['description'],
+                              style: CustomTextStyles.bodySmallGray800,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  _buildConfirmLocationFrame(context)
-                ],
-              )
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildPickALocationFrame(context),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _placesList.length,
-                      itemBuilder: (context, index) => ListTile(
-                        onTap: () async {
-                          List<Location> l = await locationFromAddress(
-                              _placesList[index]['description']);
-                          LatLng latLng =
-                              LatLng(l.last.latitude, l.last.longitude);
-                          List<Placemark> places =
-                              await placemarkFromCoordinates(
-                                  latLng.latitude, latLng.longitude);
-                          Placemark place = places[0];
-
-                          final GoogleMapController controller =
-                              await _mapController.future;
-                          double zoomLevel = 13;
-                          controller.animateCamera(CameraUpdate.newLatLngZoom(
-                            LatLng(latLng.latitude, latLng.longitude),
-                            zoomLevel,
-                          ));
-
-                          setState(() {
-                            _currentPosition = latLng;
-                            _currentAddress =
-                                '${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}';
-                            _postalCode = place.postalCode!;
-                          });
-                          _controller.clear();
-                        },
-                        title: Text(
-                          _placesList[index]['description'],
-                          style: CustomTextStyles.bodySmallGray800,
-                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
       ),
     );
   }
@@ -327,7 +384,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
         ),
         textStyle: TextStyle(color: Colors.black, fontSize: 17.v),
         onPressed: () {
-          getUsersCurrentLocation();
+          checkPermissions();
         });
   }
 
