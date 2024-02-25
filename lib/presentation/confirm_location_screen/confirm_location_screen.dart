@@ -92,30 +92,30 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 content: Text(
-                  "Repairs Duniya Partner would like to use this device's location for providing better service. Please allow this app to access location..",
-                  style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
+                  "This app will utilize location data in background only while the app is in use to enhance and optimize the user experience.",
+                  style: TextStyle(color: Colors.black, fontSize: 20.adaptSize),
                 ),
                 actions: [
-                  ElevatedButton(
+                  TextButton(
                     onPressed: () {
                       Navigator.of(context).pop();
                       setState(() {
                         _permission = loc.PermissionStatus.deniedForever;
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       'Deny',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
                     ),
                   ),
-                  ElevatedButton(
+                  TextButton(
                     onPressed: () async {
                       Navigator.of(context).pop();
                       await handler.openAppSettings();
                     },
-                    child: const Text(
-                      'Go to Settings',
-                      style: TextStyle(color: Colors.black),
+                    child: Text(
+                      'Allow',
+                      style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
                     ),
                   ),
                 ],
