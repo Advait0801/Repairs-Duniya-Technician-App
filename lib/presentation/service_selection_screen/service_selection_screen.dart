@@ -75,6 +75,8 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
         SetOptions(merge: true),
       );
 
+      DocumentSnapshot docSnapshot = await 
+
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),

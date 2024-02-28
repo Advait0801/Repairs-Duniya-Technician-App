@@ -154,12 +154,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'userId': _user!.uid,
                                 'phone': widget.phoneNumber,
                               });
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ConfirmLocationScreen()),
-                              );
+                              
                             }
                           } catch (e) {
                             log(e.toString());
