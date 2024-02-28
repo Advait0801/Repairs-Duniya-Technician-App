@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_pin_code_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -154,7 +155,25 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'userId': _user!.uid,
                                 'phone': widget.phoneNumber,
                               });
-                              
+
+                              DocumentSnapshot docSnapshot = await _firestore
+                                  .collection('technicians')
+                                  .doc(_user!.uid)
+                                  .get();
+                              if (docSnapshot.exists) {
+                                var data = docSnapshot.data();
+                                bool exists = false;
+                                if (data != null && data is Map<String, dynamic>) {
+                                  exists = data.containsKey('services');
+                                }
+                                if(exists == true){
+                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()), (route) => false);
+                                }
+                              } else {
+                                QuerySnapshot querySnapshot = await _firestore.collection('technicians').doc(_user!.uid).collection('uploads').get();
+                                if(querySnapshot.docs.isNotEmpty){}
+
+                              }
                             }
                           } catch (e) {
                             log(e.toString());
