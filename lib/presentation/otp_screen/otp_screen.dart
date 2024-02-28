@@ -154,7 +154,6 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'userId': _user!.uid,
                                 'phone': widget.phoneNumber,
                               });
-                              saveLogin(userToken);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
