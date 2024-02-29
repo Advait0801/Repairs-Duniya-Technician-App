@@ -61,16 +61,19 @@ class HalfPage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (name == 'Home') {
+          onClose();
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => const TechnicianHomeScreen()));
         } else if (name == 'My Bookings') {
+          onClose();
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => MyBookingsScreen(id: 'p')));
         } else if (name == 'Contact') {
+          onClose();
           Navigator.push(
               context,
               MaterialPageRoute(

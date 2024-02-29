@@ -156,24 +156,9 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'phone': widget.phoneNumber,
                               });
 
-                              DocumentSnapshot docSnapshot = await _firestore
-                                  .collection('technicians')
-                                  .doc(_user!.uid)
-                                  .get();
-                              if (docSnapshot.exists) {
-                                var data = docSnapshot.data();
-                                bool exists = false;
-                                if (data != null && data is Map<String, dynamic>) {
-                                  exists = data.containsKey('services');
-                                }
-                                if(exists == true){
-                                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()), (route) => false);
-                                }
-                              } else {
-                                QuerySnapshot querySnapshot = await _firestore.collection('technicians').doc(_user!.uid).collection('uploads').get();
-                                if(querySnapshot.docs.isNotEmpty){}
+                              saveLogin(userToken);
 
-                              }
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()));
                             }
                           } catch (e) {
                             log(e.toString());

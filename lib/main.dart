@@ -24,7 +24,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeHelper().themeData(),
       title: 'rd_technician_app',
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen()
+      home: FutureBuilder<bool>(
+        future: checkLoginStatus(), // Check login status asynchronously
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // Return the appropriate screen based on the login status
+            return snapshot.data == true
+                ? const TechnicianHomeScreen()
+                : const LoginScreen();
+          } else {
+            // Return a loading indicator or splash screen while checking login status
+            return const CircularProgressIndicator();
+          }
+        },
+      ),
     );
   }
 

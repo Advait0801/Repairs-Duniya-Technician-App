@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/technician_home_screen/notifications_display.dart';
 import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
+import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/completed_widget.dart';
@@ -179,10 +180,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
   void _hideHalfPage(BuildContext context) {
     // Update the state or perform other actions as needed
-    Navigator.of(context).pop();
     setState(() {
       showHalfPage = false;
     });
+    Navigator.of(context).popUntil((route) {
+      return route is TechnicianHomeScreen;      
+    },);
   }
 
   Future<List<String>> fetchNotificationsFromFirestore() async {
