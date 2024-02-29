@@ -99,6 +99,7 @@ class PushNotificationSystem {
             DateTime date = snapshot.data()?['serviceDate'] ?? DateTime.now();
             bool urgentBooking = snapshot.data()?['urgentBooking'] ?? false;
             String address = snapshot.data()?['address']?.toString() ?? "hello";
+            GeoPoint? geoPoint = snapshot.data()?['userLocation'];
             String service =
                 snapshot.data()?['serviceName']?.toString() ?? 'hello';
             Timestamp timeStamp =
@@ -131,6 +132,7 @@ class PushNotificationSystem {
                 'customerPhone': phoneNumber,
                 'urgentBooking': urgentBooking,
                 'customerAddress': address,
+                'customerLocation': geoPoint,
                 'customerId': user,
                 'customerTokenId': customerTokenId,
                 'status': 'p',

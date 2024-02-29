@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/end_selfie_screen.dart';
@@ -10,6 +11,7 @@ class PendingWidget extends StatefulWidget {
   const PendingWidget({
     super.key,
     required this.docName,
+    required this.location,
     required this.id,
     required this.phone,
     required this.address,
@@ -21,6 +23,7 @@ class PendingWidget extends StatefulWidget {
   final String id;
   final String phone;
   final String timing;
+  final GeoPoint location;
   final String serviceName;
   final String address;
   final String date;
@@ -31,6 +34,18 @@ class PendingWidget extends StatefulWidget {
 }
 
 class _PendingWidgetState extends State<PendingWidget> {
+
+  Future<void> launchMap(double latitude, double longitude) async {
+    String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    Uri url = Uri.parse(googleMapsUrl);
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $googleMapsUrl';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -171,13 +186,21 @@ class _PendingWidgetState extends State<PendingWidget> {
                             left: 12.h,
                             top: 4.v,
                           ),
-                          child: Text(
-                            widget.address,
-                            style: TextStyle(
-                              color: appTheme.blueGray700,
-                              fontSize: 12.fSize,
-                              fontFamily: 'Open Sans',
-                              fontWeight: FontWeight.w400,
+                          child: GestureDetector(
+                            onTap: () async {
+                              double latitude = widget.location.latitude;
+                              double longitude = widget.location.longitude;
+
+                              launchMap(latitude, longitude);
+                            },
+                            child: Text(
+                              widget.address,
+                              style: TextStyle(
+                                color: appTheme.blueGray700,
+                                fontSize: 12.fSize,
+                                fontFamily: 'Open Sans',
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ),
                         ),

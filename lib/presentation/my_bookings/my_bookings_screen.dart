@@ -73,6 +73,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     : documentSnapshot['timeIndex'],
                 phone: documentSnapshot['customerPhone'],
                 address: documentSnapshot['customerAddress'],
+                location: documentSnapshot['customerLocation'],
                 date: date,
               ),
             );
@@ -534,6 +535,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     );
                   } else if (screenId == 'p' || screenId == 's') {
                     return PendingWidget(
+                      location: pending[index].location,
                       serviceName: pending[index].serviceName,
                       timing: pending[index].timing,
                       docName: pending[index].docName,
