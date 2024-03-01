@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/end_selfie_screen.dart';
 import 'package:technician_app/presentation/my_bookings/start_selfie_screen.dart';
@@ -35,7 +36,7 @@ class PendingWidget extends StatefulWidget {
 
 class _PendingWidgetState extends State<PendingWidget> {
 
-  Future<void> launchMap(double latitude, double longitude) async {
+  static Future<void> launchMap(double latitude, double longitude) async {
     String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     Uri url = Uri.parse(googleMapsUrl);
 
@@ -223,7 +224,7 @@ class _PendingWidgetState extends State<PendingWidget> {
                       Padding(
                         padding: EdgeInsets.only(left: 18.h, right: 18.h),
                         child: Text(
-                          "Pending",
+                          widget.id == 'p' ? "Pending" : "Started Working",
                           style: TextStyle(
                             color: appTheme.red500,
                             fontSize: 13.740318298339844.fSize,
@@ -276,9 +277,16 @@ class _PendingWidgetState extends State<PendingWidget> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      'Started working..',
-                      style: CustomTextStyles.labelLargeInterRed500,
+                    CustomElevatedButton(
+                      onPressed: () async {
+                        launchUrl(Uri.parse('tel://${widget.phone}'));
+                      },
+                      height: 49.v,
+                      width: 157.h,
+                      text: "Call",
+                      buttonStyle: CustomButtonStyles.none,
+                      decoration: CustomButtonStyles
+                          .gradientPrimaryToGrayTL13Decoration,
                     ),
                     CustomElevatedButton(
                       onPressed: () {
