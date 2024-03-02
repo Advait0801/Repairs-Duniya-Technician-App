@@ -158,7 +158,11 @@ class _OtpScreenState extends State<OtpScreen> {
 
                               saveLogin(userToken);
 
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ConfirmLocationScreen()));
                             }
                           } catch (e) {
                             log(e.toString());

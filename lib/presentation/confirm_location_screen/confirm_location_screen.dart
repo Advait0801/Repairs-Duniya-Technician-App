@@ -105,7 +105,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                     },
                     child: Text(
                       'Deny',
-                      style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
+                      style: TextStyle(
+                          color: Colors.black, fontSize: 15.adaptSize),
                     ),
                   ),
                   TextButton(
@@ -115,7 +116,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
                     },
                     child: Text(
                       'Allow',
-                      style: TextStyle(color: Colors.black, fontSize: 15.adaptSize),
+                      style: TextStyle(
+                          color: Colors.black, fontSize: 15.adaptSize),
                     ),
                   ),
                 ],

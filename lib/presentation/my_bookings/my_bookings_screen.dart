@@ -183,9 +183,11 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     setState(() {
       showHalfPage = false;
     });
-    Navigator.of(context).popUntil((route) {
-      return route is TechnicianHomeScreen;      
-    },);
+    Navigator.of(context).popUntil(
+      (route) {
+        return route is TechnicianHomeScreen;
+      },
+    );
   }
 
   Future<List<String>> fetchNotificationsFromFirestore() async {

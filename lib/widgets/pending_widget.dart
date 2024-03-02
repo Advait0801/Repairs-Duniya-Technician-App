@@ -35,9 +35,9 @@ class PendingWidget extends StatefulWidget {
 }
 
 class _PendingWidgetState extends State<PendingWidget> {
-
   static Future<void> launchMap(double latitude, double longitude) async {
-    String googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    String googleMapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     Uri url = Uri.parse(googleMapsUrl);
 
     if (await canLaunchUrl(url)) {

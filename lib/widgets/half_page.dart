@@ -61,23 +61,23 @@ class HalfPage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (name == 'Home') {
-          onClose();
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => const TechnicianHomeScreen()));
+                  builder: (context) => const TechnicianHomeScreen()),
+              (route) => false);
         } else if (name == 'My Bookings') {
-          onClose();
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => MyBookingsScreen(id: 'p')));
+                  builder: (context) => MyBookingsScreen(id: 'p')),
+              (route) => false);
         } else if (name == 'Contact') {
-          onClose();
-          Navigator.push(
+          Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
-                  builder: (context) => const HelpSupportScreen()));
+                  builder: (context) => const HelpSupportScreen()),
+              (route) => false);
         }
       },
       child: Column(

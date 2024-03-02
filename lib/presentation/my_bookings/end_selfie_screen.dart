@@ -43,8 +43,9 @@ class _EndSelfieScreenState extends State<EndSelfieScreen> {
       });
       File pickedFile = path;
 
-      final Reference storageReference = _storage.ref().child(
-          'uploads/${_user!.uid}/${widget.docName}_endingSelfie');
+      final Reference storageReference = _storage
+          .ref()
+          .child('uploads/${_user!.uid}/${widget.docName}_endingSelfie');
       final TaskSnapshot snapshot = await storageReference.putFile(pickedFile);
       String downloadUrl = await snapshot.ref.getDownloadURL();
 
