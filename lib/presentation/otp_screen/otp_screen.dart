@@ -2,8 +2,11 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:http/retry.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
+import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
+import 'package:technician_app/presentation/service_selection_screen/service_selection_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_pin_code_text_field.dart';
@@ -27,6 +30,41 @@ class _OtpScreenState extends State<OtpScreen> {
   User? _user;
   bool flag = false;
   bool isSaving = false;
+
+  Future<void> navigation(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String? status = prefs.getString('location');
+    if (status != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const IdVerificationScreen()));
+      return;
+    }
+
+    status = prefs.getString('uploads');
+    if (status != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const ServiceSelectionScreen()));
+      return;
+    }
+
+    status = prefs.getString('userToken');
+    if (status != null) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
+          (route) => false);
+      return;
+    }
+
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()));
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,11 +186,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'phone': widget.phoneNumber,
                               });
 
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ConfirmLocationScreen()));
+                              await navigation(context);
                             }
                           } catch (e) {
                             log(e.toString());

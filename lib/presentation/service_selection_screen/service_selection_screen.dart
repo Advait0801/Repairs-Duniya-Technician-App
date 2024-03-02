@@ -23,29 +23,29 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Map<String, String> serviceImages = {
-    'AC Repair': ImageConstant.imgImage38,
-    'Fridge Repair': ImageConstant.imgImage34,
+    'AC': ImageConstant.imgImage38,
+    'Fridge': ImageConstant.imgImage34,
     'Plumber': ImageConstant.imgImage83,
     'Electrician': ImageConstant.electrician,
     'Geyser': ImageConstant.geyser,
     'Air Cooler': ImageConstant.aircooler,
-    'MicroWave/Oven': ImageConstant.microwave,
+    'MicroWave': ImageConstant.microwave,
     'Painter': ImageConstant.painter,
     'Construction/Renovation': ImageConstant.construction,
-    'Washing Machine Repair': ImageConstant.imgImage31,
+    'Washing Machine': ImageConstant.imgImage31,
   };
 
   List<String> servicesList = [
-    'AC Repair',
-    'Fridge Repair',
+    'AC',
+    'Fridge',
     'Plumber',
     'Electrician',
     'Geyser',
     'Air Cooler',
-    'MicroWave/Oven',
+    'MicroWave',
     'Painter',
     'Construction/Renovation',
-    'Washing Machine Repair',
+    'Washing Machine',
   ];
 
   @override

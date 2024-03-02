@@ -2,7 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:technician_app/firebase_options.dart';
+import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
+import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
+import 'package:technician_app/presentation/service_selection_screen/service_selection_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/theme/theme_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,8 +21,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  String page = 'location';
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,24 +47,11 @@ class MyApp extends StatelessWidget {
   Future<bool> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? status = prefs.getString('userToken');
-    if (status != null) {
-      page = 'home';
+    String? token = prefs.getString('userToken');
+    if (token != null) {
       return true;
     }
-
-    status = prefs.getString('uploads');
-    if (status != null) {
-      page = 'service';
-      return true;
-    }
-
-    status = prefs.getString('location');
-    if (status != null) {
-      page = 'upload';
-      return true;
-    }
-
+    // Token is not valid or not present, return false
     return false;
   }
 }
