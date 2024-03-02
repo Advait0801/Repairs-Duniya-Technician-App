@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -92,7 +93,7 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
             builder: (BuildContext context) {
               return AlertDialog(
                 content: Text(
-                  "This app will utilize location data in background only while the app is in use to enhance and optimize the user experience.",
+                  "This app will utilize location data only while the app is in use to enhance and optimize the user experience.",
                   style: TextStyle(color: Colors.black, fontSize: 20.adaptSize),
                 ),
                 actions: [
@@ -165,6 +166,11 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     }
   }
 
+  Future<void> saveLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('location', 'done');
+  }
+
   Future<void> uploadLocation() async {
     try {
       await _firestore
@@ -176,6 +182,8 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
         'latitude': _currentPosition!.latitude,
         'longitude': _currentPosition!.longitude
       }, SetOptions(merge: true));
+
+      await saveLocation();
 
       Navigator.push(
           context,

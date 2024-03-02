@@ -28,14 +28,6 @@ class _OtpScreenState extends State<OtpScreen> {
   bool flag = false;
   bool isSaving = false;
 
-  void saveLogin(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    DateTime expirationDate = DateTime.now().add(const Duration(days: 30));
-
-    await prefs.setString('userToken', token);
-    await prefs.setString('duration', expirationDate.toIso8601String());
-  }
-
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -155,8 +147,6 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'userId': _user!.uid,
                                 'phone': widget.phoneNumber,
                               });
-
-                              saveLogin(userToken);
 
                               Navigator.push(
                                   context,

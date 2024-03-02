@@ -18,6 +18,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  String page = 'location';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -44,18 +46,24 @@ class MyApp extends StatelessWidget {
   Future<bool> checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? token = prefs.getString('userToken');
-    String? expirationDateString = prefs.getString('duration');
-
-    if (token != null && expirationDateString != null) {
-      DateTime expirationDate = DateTime.parse(expirationDateString);
-
-      if (DateTime.now().isBefore(expirationDate)) {
-        // Token is still valid, return true
-        return true;
-      }
+    String? status = prefs.getString('userToken');
+    if (status != null) {
+      page = 'home';
+      return true;
     }
-    // Token is not valid or not present, return false
+
+    status = prefs.getString('uploads');
+    if (status != null) {
+      page = 'service';
+      return true;
+    }
+
+    status = prefs.getString('location');
+    if (status != null) {
+      page = 'upload';
+      return true;
+    }
+
     return false;
   }
 }

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -68,12 +69,20 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     });
   }
 
+  Future<void> saveLogin(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userToken', token);
+  }
+
   Future<void> uploadServices() async {
     try {
       await _firestore.collection('technicians').doc(_user!.uid).set(
         {'services': FieldValue.arrayUnion(services)},
         SetOptions(merge: true),
       );
+
+      String? token = await _user!.getIdToken();
+      await saveLogin(token!);
 
       Navigator.pushAndRemoveUntil(
           context,
