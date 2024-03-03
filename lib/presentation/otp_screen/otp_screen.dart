@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:http/retry.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
@@ -34,12 +33,12 @@ class _OtpScreenState extends State<OtpScreen> {
   Future<void> navigation(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? status = prefs.getString('location');
+    String? status = prefs.getString('userToken');
     if (status != null) {
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => const IdVerificationScreen()));
+          MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
+          (route) => false);
       return;
     }
 
@@ -52,12 +51,12 @@ class _OtpScreenState extends State<OtpScreen> {
       return;
     }
 
-    status = prefs.getString('userToken');
+    status = prefs.getString('location');
     if (status != null) {
-      Navigator.pushAndRemoveUntil(
+      Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
-          (route) => false);
+          MaterialPageRoute(
+              builder: (context) => const IdVerificationScreen()));
       return;
     }
 

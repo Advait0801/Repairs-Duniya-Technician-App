@@ -63,8 +63,10 @@ class _EndSelfieScreenState extends State<EndSelfieScreen> {
           .doc(widget.docName)
           .update({'status': 'c'});
 
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 'c')));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 'c')),
+          (route) => false);
     } catch (e) {
       log(e.toString());
     } finally {

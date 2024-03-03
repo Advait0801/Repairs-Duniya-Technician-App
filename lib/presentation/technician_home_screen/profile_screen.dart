@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/presentation/login_screen/login_screen.dart';
+import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -59,6 +61,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 5.v,
               ),
               Text(_user!.phoneNumber!),
+              SizedBox(
+                height: 20.v,
+              ),
+              CustomElevatedButton(
+                onPressed: () async {
+                  await _auth.signOut();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginScreen()),
+                      (route) => false);
+                },
+                height: 49.v,
+                width: 157.h,
+                text: "Log Out",
+                buttonStyle: CustomButtonStyles.none,
+                decoration:
+                    CustomButtonStyles.gradientPrimaryToGrayTL13Decoration,
+              ),
             ],
           ),
         ),

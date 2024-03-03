@@ -64,8 +64,10 @@ class _StartSelfieScreenState extends State<StartSelfieScreen> {
           .doc(widget.docName)
           .update({'status': 's', 'jobAcceptance': true});
 
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 's')));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => MyBookingsScreen(id: 's')),
+          (route) => false);
     } catch (e) {
       log(e.toString());
     } finally {
