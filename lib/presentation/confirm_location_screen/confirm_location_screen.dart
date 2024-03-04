@@ -166,11 +166,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
     }
   }
 
-  Future<void> saveLocation() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('location', 'done');
-  }
-
   Future<void> uploadLocation() async {
     try {
       await _firestore
@@ -183,7 +178,10 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
         'longitude': _currentPosition!.longitude
       }, SetOptions(merge: true));
 
-      await saveLocation();
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .set({'allUploaded': false}, SetOptions(merge: true));
 
       Navigator.push(
           context,

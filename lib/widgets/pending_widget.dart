@@ -187,21 +187,13 @@ class _PendingWidgetState extends State<PendingWidget> {
                             left: 12.h,
                             top: 4.v,
                           ),
-                          child: GestureDetector(
-                            onTap: () async {
-                              double latitude = widget.location.latitude;
-                              double longitude = widget.location.longitude;
-
-                              launchMap(latitude, longitude);
-                            },
-                            child: Text(
-                              widget.address,
-                              style: TextStyle(
-                                color: appTheme.blueGray700,
-                                fontSize: 12.fSize,
-                                fontFamily: 'Open Sans',
-                                fontWeight: FontWeight.w400,
-                              ),
+                          child: Text(
+                            widget.address,
+                            style: TextStyle(
+                              color: appTheme.blueGray700,
+                              fontSize: 12.fSize,
+                              fontFamily: 'Open Sans',
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ),
@@ -238,6 +230,19 @@ class _PendingWidgetState extends State<PendingWidget> {
                 ),
               ],
             ),
+          ),
+          SizedBox(
+            height: 14.v,
+          ),
+          CustomElevatedButton(
+            text: 'Get Directions ---->',
+            onPressed: () async {
+              double latitude = widget.location.latitude;
+              double longitude = widget.location.longitude;
+
+              launchMap(latitude, longitude);
+            },
+            decoration: CustomButtonStyles.gradientRedAToRedTL13Decoration,
           ),
           SizedBox(height: 14.v),
           widget.id == 'p'

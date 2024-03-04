@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/confirm_location_screen/confirm_location_screen.dart';
 import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
@@ -9,7 +10,6 @@ import 'package:technician_app/presentation/service_selection_screen/service_sel
 import 'package:technician_app/presentation/technician_home_screen/technician_home_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/custom_pin_code_text_field.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class OtpScreen extends StatefulWidget {
@@ -31,19 +31,32 @@ class _OtpScreenState extends State<OtpScreen> {
   bool isSaving = false;
 
   Future<void> navigation(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String? status = prefs.getString('userToken');
-    if (status != null) {
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
-          (route) => false);
-      return;
+    DocumentSnapshot documentSnapshot =
+        await _firestore.collection('technicians').doc(_user!.uid).get();
+    if (documentSnapshot.exists) {
+      var data = documentSnapshot.data();
+      if (data != null &&
+          data is Map<String, dynamic> &&
+          data.containsKey('allUploaded')) {
+        log('data....');
+        bool status = data['allUploaded'];
+        if (status == true) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const TechnicianHomeScreen()),
+              (route) => false);
+          return;
+        }
+      }
     }
 
-    status = prefs.getString('uploads');
-    if (status != null) {
+    QuerySnapshot querySnapshot = await _firestore
+        .collection('technicians')
+        .doc(_user!.uid)
+        .collection('uploads')
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -51,8 +64,12 @@ class _OtpScreenState extends State<OtpScreen> {
       return;
     }
 
-    status = prefs.getString('location');
-    if (status != null) {
+    querySnapshot = await _firestore
+        .collection('technicians')
+        .doc(_user!.uid)
+        .collection('location')
+        .get();
+    if (querySnapshot.docs.isNotEmpty) {
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -63,6 +80,11 @@ class _OtpScreenState extends State<OtpScreen> {
     Navigator.push(context,
         MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()));
     return;
+  }
+
+  Future<void> saveLogin(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userToken', token);
   }
 
   @override
@@ -185,6 +207,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'phone': widget.phoneNumber,
                               });
 
+                              saveLogin(userToken);
                               await navigation(context);
                             }
                           } catch (e) {

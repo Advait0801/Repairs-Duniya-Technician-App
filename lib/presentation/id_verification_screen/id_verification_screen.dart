@@ -49,11 +49,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
     return false;
   }
 
-  Future<void> saveUpload() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('uploads', 'done');
-  }
-
   Future<void> _uploadFiles() async {
     try {
       setState(() {
@@ -62,8 +57,6 @@ class _IdVerificationScreenState extends State<IdVerificationScreen> {
       await _uploadFile(imageIDFrontPath!, 'front');
       await _uploadFile(imageIDBackPath!, 'back');
       await _uploadFile(imageSelfiePath!, 'selfie');
-
-      await saveUpload();
 
       Navigator.push(
         context,

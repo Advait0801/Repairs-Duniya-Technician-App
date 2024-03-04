@@ -69,11 +69,6 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     });
   }
 
-  Future<void> saveLogin(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userToken', token);
-  }
-
   Future<void> uploadServices() async {
     try {
       await _firestore.collection('technicians').doc(_user!.uid).set(
@@ -81,8 +76,10 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
         SetOptions(merge: true),
       );
 
-      String? token = await _user!.getIdToken();
-      await saveLogin(token!);
+      await _firestore
+          .collection('technicians')
+          .doc(_user!.uid)
+          .update({'allUploaded': true});
 
       Navigator.pushAndRemoveUntil(
           context,
