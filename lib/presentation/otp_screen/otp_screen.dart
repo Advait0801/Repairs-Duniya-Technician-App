@@ -35,11 +35,8 @@ class _OtpScreenState extends State<OtpScreen> {
         await _firestore.collection('technicians').doc(_user!.uid).get();
     if (documentSnapshot.exists) {
       var data = documentSnapshot.data();
-      if (data != null &&
-          data is Map<String, dynamic> &&
-          data.containsKey('allUploaded')) {
-        log('data....');
-        bool status = data['allUploaded'];
+      if (data != null && data is Map<String, dynamic>) {
+        bool status = data.containsKey('services');
         if (status == true) {
           Navigator.pushAndRemoveUntil(
               context,
@@ -57,10 +54,11 @@ class _OtpScreenState extends State<OtpScreen> {
         .collection('uploads')
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => const ServiceSelectionScreen()));
+              builder: (context) => const ServiceSelectionScreen()),
+          (route) => false);
       return;
     }
 
@@ -70,15 +68,17 @@ class _OtpScreenState extends State<OtpScreen> {
         .collection('location')
         .get();
     if (querySnapshot.docs.isNotEmpty) {
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => const IdVerificationScreen()));
+          MaterialPageRoute(builder: (context) => const IdVerificationScreen()),
+          (route) => false);
       return;
     }
 
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()));
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const ConfirmLocationScreen()),
+        (route) => false);
     return;
   }
 
@@ -205,7 +205,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                   .set({
                                 'userId': _user!.uid,
                                 'phone': widget.phoneNumber,
-                              });
+                              }, SetOptions(merge: true));
 
                               saveLogin(userToken);
                               await navigation(context);

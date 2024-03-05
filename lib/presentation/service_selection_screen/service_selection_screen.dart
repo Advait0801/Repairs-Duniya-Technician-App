@@ -76,11 +76,6 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
         SetOptions(merge: true),
       );
 
-      await _firestore
-          .collection('technicians')
-          .doc(_user!.uid)
-          .update({'allUploaded': true});
-
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),

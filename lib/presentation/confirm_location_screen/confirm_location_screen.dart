@@ -178,11 +178,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
         'longitude': _currentPosition!.longitude
       }, SetOptions(merge: true));
 
-      await _firestore
-          .collection('technicians')
-          .doc(_user!.uid)
-          .set({'allUploaded': false}, SetOptions(merge: true));
-
       Navigator.push(
           context,
           MaterialPageRoute(

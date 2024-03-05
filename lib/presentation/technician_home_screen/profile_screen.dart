@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/login_screen/login_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -23,6 +24,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _user = user;
       });
     });
+  }
+
+  Future<void> logOut(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove('userToken');
+
+    await _auth.signOut();
+
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false);
+    return;
   }
 
   @override
@@ -65,14 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 20.v,
               ),
               CustomElevatedButton(
-                onPressed: () async {
-                  await _auth.signOut();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                      (route) => false);
-                },
+                onPressed: () => logOut(context),
                 height: 49.v,
                 width: 157.h,
                 text: "Log Out",
