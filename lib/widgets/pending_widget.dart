@@ -235,13 +235,14 @@ class _PendingWidgetState extends State<PendingWidget> {
             height: 14.v,
           ),
           CustomElevatedButton(
-            text: 'Get Directions ---->',
+            text: 'Get Directions',
             onPressed: () async {
               double latitude = widget.location.latitude;
               double longitude = widget.location.longitude;
 
               launchMap(latitude, longitude);
             },
+            buttonStyle: CustomButtonStyles.none,
             decoration: CustomButtonStyles.gradientRedAToRedTL13Decoration,
           ),
           SizedBox(height: 14.v),
