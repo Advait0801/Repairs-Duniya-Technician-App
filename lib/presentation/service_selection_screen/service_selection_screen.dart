@@ -76,6 +76,9 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
         SetOptions(merge: true),
       );
 
+      String? token = await _user!.getIdToken();
+      saveLogin(token!);
+
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const TechnicianHomeScreen()),
@@ -83,6 +86,11 @@ class _ServiceSelectionScreenState extends State<ServiceSelectionScreen> {
     } catch (e) {
       log("Failed to upload services: $e");
     }
+  }
+
+  Future<void> saveLogin(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userToken', token);
   }
 
   @override

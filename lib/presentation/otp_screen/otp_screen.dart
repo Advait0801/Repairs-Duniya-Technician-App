@@ -82,11 +82,6 @@ class _OtpScreenState extends State<OtpScreen> {
     return;
   }
 
-  Future<void> saveLogin(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('userToken', token);
-  }
-
   @override
   Widget build(BuildContext context) {
     mediaQueryData = MediaQuery.of(context);
@@ -207,7 +202,6 @@ class _OtpScreenState extends State<OtpScreen> {
                                 'phone': widget.phoneNumber,
                               }, SetOptions(merge: true));
 
-                              saveLogin(userToken);
                               await navigation(context);
                             }
                           } catch (e) {
