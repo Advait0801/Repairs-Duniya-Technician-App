@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/notification.dart';
 import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
       setState(() {
         _user = user;
         getEntries();
+        saveLogin();
       });
     });
     getCurrentLocation();
@@ -94,6 +96,13 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
         log(e.toString());
       }
     }
+  }
+
+  Future<void> saveLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = await _user!.getIdToken();
+
+    prefs.setString('userToken', token!);
   }
 
   Future<void> initializePermission() async {
