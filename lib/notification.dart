@@ -96,14 +96,18 @@ class PushNotificationSystem {
             bool job = snapshot.data()?['jobAcceptance'] ?? false;
             String phoneNumber = snapshot.data()?['userPhoneNumber'] ?? "error";
             int time = snapshot.data()?['timeIndex'] ?? -1;
-            DateTime date = snapshot.data()?['serviceDate'] ?? DateTime.now();
             bool urgentBooking = snapshot.data()?['urgentBooking'] ?? false;
+            Timestamp timeStamp = Timestamp.now();
+            DateTime date = timeStamp.toDate();
+            if (urgentBooking == false) {
+              timeStamp = snapshot.data()?['serviceDate'] ?? Timestamp.now();
+              date = timeStamp.toDate();
+            }
             String address = snapshot.data()?['address']?.toString() ?? "hello";
             GeoPoint? geoPoint = snapshot.data()?['userLocation'];
             String service =
                 snapshot.data()?['serviceName']?.toString() ?? 'hello';
-            Timestamp timeStamp =
-                snapshot.data()?['DateTime'] ?? Timestamp.now();
+            timeStamp = snapshot.data()?['DateTime'] ?? Timestamp.now();
             DateTime bookingTime = timeStamp.toDate();
             DateTime currentTime = DateTime.now();
 
@@ -143,7 +147,7 @@ class PushNotificationSystem {
                   .doc(_user!.uid)
                   .collection('notifications')
                   .add({
-                'message': 'You have received a new service from $phoneNumber',
+                'message': 'You have received a new booking.',
                 'timestamp': FieldValue.serverTimestamp()
               });
             }

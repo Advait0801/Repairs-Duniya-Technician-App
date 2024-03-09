@@ -21,7 +21,7 @@ class DeclineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 19.v),
+      padding: EdgeInsets.symmetric(vertical: 20.v, horizontal: 15.h),
       decoration: AppDecoration.gradientOnErrorToBlueGray.copyWith(
         borderRadius: BorderRadiusStyle.roundedBorder10,
       ),

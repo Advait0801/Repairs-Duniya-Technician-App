@@ -23,7 +23,7 @@ class CompletedWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 23.h,
+        horizontal: 15.h,
         vertical: 20.v,
       ),
       decoration: AppDecoration.gradientOnErrorToBlueGray.copyWith(

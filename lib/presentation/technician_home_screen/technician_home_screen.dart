@@ -1,19 +1,24 @@
 import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart' as handler;
+import 'package:location/location.dart' as loc;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:technician_app/notification.dart';
-import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:technician_app/core/app_export.dart';
+import 'package:technician_app/notification.dart';
+import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
 import 'package:technician_app/presentation/technician_home_screen/notifications_display.dart';
+import 'package:technician_app/presentation/technician_home_screen/profile_screen.dart';
 import 'package:technician_app/widgets/app_bar/appbar_title.dart';
 import 'package:technician_app/widgets/app_bar/appbar_trailing_image.dart';
 import 'package:technician_app/widgets/completed_widget.dart';
+import 'package:technician_app/widgets/custom_elevated_button.dart';
 import 'package:technician_app/widgets/half_page.dart';
 
 class TechnicianHomeScreen extends StatefulWidget {
@@ -27,6 +32,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final loc.Location _location = loc.Location();
   User? _user;
   LatLng? _currentPosition;
   bool showHalfPage = false;
@@ -43,7 +49,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     _auth.authStateChanges().listen((User? user) {
       setState(() {
         _user = user;
-        getEntries();
         saveLogin();
       });
     });
@@ -52,7 +57,83 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     initializePermission();
   }
 
+  Future<void> saveLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = await _user!.getIdToken();
+
+    prefs.setString('userToken', token!);
+  }
+
   Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    loc.PermissionStatus permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await _location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _location.requestService();
+    }
+
+    if (!serviceEnabled) {
+      return Future.error('Location Services not Enabled');
+    }
+
+    // Request permission to access location
+    permission = await _location.hasPermission();
+    if (permission == loc.PermissionStatus.denied) {
+      permission = await _location.requestPermission();
+
+      if (permission == loc.PermissionStatus.denied) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Text(
+                  "This app will utilize location data only while the app is in use to enhance and optimize the user experience.",
+                  style: TextStyle(color: Colors.black, fontSize: 20.adaptSize),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setState(() {
+                        permission = loc.PermissionStatus.deniedForever;
+                      });
+                    },
+                    child: Text(
+                      'Deny',
+                      style: TextStyle(
+                          color: Colors.black, fontSize: 15.adaptSize),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      await handler.openAppSettings();
+                    },
+                    child: Text(
+                      'Allow',
+                      style: TextStyle(
+                          color: Colors.black, fontSize: 15.adaptSize),
+                    ),
+                  ),
+                ],
+              );
+            });
+
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == loc.PermissionStatus.deniedForever) {
+      return Future.error(
+          'Location permissions are denied forever, cannot request permission');
+    }
+
+    getUserLocation();
+  }
+
+  Future<void> getUserLocation() async {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     setState(() {
@@ -96,13 +177,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
         log(e.toString());
       }
     }
-  }
-
-  Future<void> saveLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = await _user!.getIdToken();
-
-    prefs.setString('userToken', token!);
   }
 
   Future<void> initializePermission() async {
@@ -153,52 +227,6 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
     setState(() {
       showHalfPage = false;
     });
-  }
-
-  Future<void> getEntries() async {
-    try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('technicians')
-          .doc(_user!.uid)
-          .collection('serviceList')
-          .get();
-
-      if (querySnapshot.docs.isNotEmpty) {
-        for (QueryDocumentSnapshot documentSnapshot in querySnapshot.docs) {
-          Timestamp timestamp = documentSnapshot['date'];
-          DateTime datetime = timestamp.toDate();
-          String time =
-              '${datetime.hour}:${datetime.minute}:${datetime.second}';
-          String date = '${datetime.day}/${datetime.month}/${datetime.year}';
-          if (documentSnapshot['status'] == 'c') {
-            recentBookings.add(CompletedWidget(
-              phone: documentSnapshot['customerPhone'],
-              time: time,
-              address: documentSnapshot['customerAddress'],
-              timing: documentSnapshot['urgentBooking'] == true
-                  ? 'Urgent Booking'
-                  : documentSnapshot['timeIndex'],
-              serviceName: documentSnapshot['serviceName'],
-              date: date,
-            ));
-          }
-        }
-      }
-
-      recentBookings.sort((a, b) {
-        int c1 = b.date.compareTo(a.date);
-        int c2 = b.time.compareTo(a.time);
-
-        // You need to return a value based on the comparison
-        if (c1 != 0) {
-          return c1;
-        } else {
-          return c2;
-        }
-      });
-    } catch (e) {
-      log("Error fetching data: $e");
-    }
   }
 
   Future<List<String>> fetchNotificationsFromFirestore() async {
@@ -394,45 +422,26 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
 
   // Section Widget
   Widget _buildUserProfileList(BuildContext context) {
-    return recentBookings.isNotEmpty
-        ? Expanded(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 9.h),
-              child: ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
-                separatorBuilder: (
-                  context,
-                  index,
-                ) {
-                  return SizedBox(
-                    height: 16.v,
-                  );
-                },
-                itemCount: recentBookings.length,
-                itemBuilder: (context, index) {
-                  return CompletedWidget(
-                    phone: recentBookings[index].phone,
-                    address: recentBookings[index].address,
-                    time: recentBookings[index].time,
-                    timing: recentBookings[index].timing,
-                    serviceName: recentBookings[index].serviceName,
-                    date: recentBookings[index].date,
-                  );
-                },
-              ),
-            ),
-          )
-        : Column(
-            children: [
-              SizedBox(
-                height: 230.v,
-              ),
-              Text(
-                'No bookings yet...',
-                style: TextStyle(color: Colors.black, fontSize: 20.fSize),
-              ),
-            ],
-          );
+    return Column(
+      children: [
+        SizedBox(
+          height: 200.v,
+        ),
+        CustomElevatedButton(
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MyBookingsScreen(id: 'p')),
+                (route) => false);
+          },
+          height: 100.v,
+          width: double.infinity,
+          text: "My Bookings",
+          buttonStyle: CustomButtonStyles.none,
+          decoration: CustomButtonStyles.gradientPrimaryToGrayTL13Decoration,
+        ),
+      ],
+    );
   }
 }

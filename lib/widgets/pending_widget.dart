@@ -51,8 +51,8 @@ class _PendingWidgetState extends State<PendingWidget> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: 20.h,
-        vertical: 19.v,
+        horizontal: 15.h,
+        vertical: 20.v,
       ),
       decoration: AppDecoration.gradientOnErrorToBlueGray.copyWith(
         borderRadius: BorderRadiusStyle.roundedBorder10,

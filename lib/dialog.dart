@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/my_bookings/my_bookings_screen.dart';
+import 'package:technician_app/widgets/custom_elevated_button.dart';
 
 class NotificationDialog extends StatefulWidget {
   final int remainingSeconds;
@@ -109,73 +110,99 @@ class _NotificationDialogState extends State<NotificationDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('New Customer - $_serviceName'),
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Time remaining: $_remainingSeconds seconds',
-              style: CustomTextStyles.bodyMediumRed500),
-          SizedBox(height: 10.v),
-          Text(
-            'User Phone Number: $_phoneNumber',
-            style: const TextStyle(color: Colors.black),
-          ),
-          Text(
-            'serviceName: $_serviceName',
-            style: const TextStyle(color: Colors.black),
-          ),
-          _urgent == false
-              ? Text(
-                  'Time shift: $_time',
-                  style: const TextStyle(color: Colors.black),
-                )
-              : const Text(
-                  'Urgent Booking',
-                  style: TextStyle(color: Colors.black),
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('New Customer - $_serviceName',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.adaptSize,
+                    fontWeight: FontWeight.bold)),
+            SizedBox(height: 20.v),
+            Text('Time remaining: $_remainingSeconds seconds',
+                style: CustomTextStyles.bodyMediumRed500),
+            SizedBox(height: 15.v),
+            Text(
+              'User Phone Number: $_phoneNumber',
+              style: const TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8.v),
+            Text(
+              'ServiceName: $_serviceName',
+              style: const TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8.v),
+            _urgent == false
+                ? Text(
+                    'Time shift: $_time',
+                    style: const TextStyle(color: Colors.black),
+                  )
+                : const Text(
+                    'Urgent Booking',
+                    style: TextStyle(color: Colors.black),
+                  ),
+            SizedBox(height: 8.v),
+            Text(
+              'Date: $_date',
+              style: const TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 8.v),
+            Text(
+              'Address: $_address',
+              style: const TextStyle(color: Colors.black),
+            ),
+            SizedBox(height: 15.v),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      sendingNotification(_firestore, _user, _docname);
+                      changeBooking(_customerUser, _docname, _user!);
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyBookingsScreen(id: 'p')),
+                          (route) => false);
+                    },
+                    text: 'Accept',
+                    height: 49.v,
+                    margin: EdgeInsets.only(right: 6.h),
+                    decoration: CustomButtonStyles
+                        .gradientLightGreenAToLightGreenADecoration,
+                    buttonStyle: CustomButtonStyles.none,
+                  ),
                 ),
-          Text(
-            'Date: $_date',
-            style: const TextStyle(color: Colors.black),
-          ),
-          Text(
-            'Address: $_address',
-            style: const TextStyle(color: Colors.black),
-          ),
-        ],
+                Expanded(
+                  child: CustomElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      setStatus('r');
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyBookingsScreen(id: 'r')),
+                          (route) => false);
+                    },
+                    text: 'Reject',
+                    height: 49.v,
+                    margin: EdgeInsets.only(right: 6.h),
+                    decoration:
+                        CustomButtonStyles.gradientRedAToRedTL13Decoration,
+                    buttonStyle: CustomButtonStyles.none,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
       ),
-      actions: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            sendingNotification(_firestore, _user, _docname);
-            changeBooking(_customerUser, _docname, _user!);
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MyBookingsScreen(id: 'p')));
-          },
-          child: const Text(
-            'Accept',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            setStatus('r');
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MyBookingsScreen(id: 'r')));
-          },
-          child: const Text(
-            'Reject',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -188,6 +215,7 @@ Future<void> sendingNotification(
   String customerId = "";
   String customerTokenId = "";
   String phoneNumber = "";
+  String serviceName = "";
   await firestore
       .collection('technicians')
       .doc(user!.uid)
@@ -198,13 +226,15 @@ Future<void> sendingNotification(
     customerId = snapshot.data()!['customerId'];
     customerTokenId = snapshot.data()!['customerTokenId'];
     phoneNumber = snapshot.data()!['customerPhone'];
+    serviceName = snapshot.data()!['serviceName'];
   });
 
-  notificationFormat(customerTokenId, customerId, phoneNumber, user);
+  notificationFormat(
+      customerTokenId, customerId, phoneNumber, user, serviceName);
 }
 
 notificationFormat(String customerTokenId, String customerId,
-    String phoneNumber, User user) async {
+    String phoneNumber, User user, String serviceName) async {
   log("Building notification format...");
   log(customerTokenId);
   log(customerId);
@@ -218,8 +248,7 @@ notificationFormat(String customerTokenId, String customerId,
   };
 
   Map bodyNotification = {
-    "body":
-        "Your serviceName request has been successfully accepted by ${user.phoneNumber}",
+    "body": "Your $serviceName request has been successfully accepted.",
     "title": "Technician Assigned",
   };
 

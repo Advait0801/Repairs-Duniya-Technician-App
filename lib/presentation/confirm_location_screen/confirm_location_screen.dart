@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/id_verification_screen/id_verification_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
@@ -235,7 +234,6 @@ class _ConfirmLocationScreenState extends State<ConfirmLocationScreen> {
       });
     });
     checkPermissions();
-    //getUserLocation();
     _controller.addListener(() {
       onChange();
     });

@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:technician_app/core/app_export.dart';
 import 'package:technician_app/presentation/id_verification_screen/verfication_complete_screen.dart';
 import 'package:technician_app/widgets/custom_elevated_button.dart';
