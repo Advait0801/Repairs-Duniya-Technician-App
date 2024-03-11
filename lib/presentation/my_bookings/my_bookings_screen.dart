@@ -379,14 +379,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          screenId == 'p' || screenId == 's'
+          screenId == 'r'
               ? Container(
-                  width: 80.h,
+                  width: 85.h,
                   padding: EdgeInsets.symmetric(horizontal: 8.h, vertical: 2.v),
                   decoration: AppDecoration.fillPrimary.copyWith(
                       borderRadius: BorderRadiusStyle.customBorderTL5),
                   child: Text(
-                    "Pending",
+                    "Rejected",
                     style: TextStyle(
                       color: theme.colorScheme.onError,
                       fontSize: 16.fSize,
@@ -398,13 +398,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               : GestureDetector(
                   onTap: () {
                     setState(() {
-                      screenId = 'p';
+                      screenId = 'r';
                     });
                   },
                   child: Padding(
                     padding: EdgeInsets.only(top: 5.v, bottom: 2.v),
                     child: Text(
-                      "Pending",
+                      "Rejected",
                       style: TextStyle(
                         color: appTheme.gray500,
                         fontSize: 16.fSize,
@@ -449,14 +449,14 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                     ),
                   ),
                 ),
-          screenId == 'r'
+          screenId == 'p' || screenId == 's'
               ? Container(
-                  width: 85.h,
+                  width: 80.h,
                   padding: EdgeInsets.symmetric(horizontal: 8.h, vertical: 2.v),
                   decoration: AppDecoration.fillPrimary.copyWith(
                       borderRadius: BorderRadiusStyle.customBorderTL5),
                   child: Text(
-                    "Rejected",
+                    "Pending",
                     style: TextStyle(
                       color: theme.colorScheme.onError,
                       fontSize: 16.fSize,
@@ -468,13 +468,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               : GestureDetector(
                   onTap: () {
                     setState(() {
-                      screenId = 'r';
+                      screenId = 'p';
                     });
                   },
                   child: Padding(
                     padding: EdgeInsets.only(top: 5.v, bottom: 2.v),
                     child: Text(
-                      "Rejected",
+                      "Pending",
                       style: TextStyle(
                         color: appTheme.gray500,
                         fontSize: 16.fSize,

@@ -168,7 +168,7 @@ class _NotificationDialogState extends State<NotificationDialog> {
                       Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MyBookingsScreen(id: 'p')),
+                              builder: (context) => MyBookingsScreen(id: 'r')),
                           (route) => false);
                     },
                     text: 'Accept',
